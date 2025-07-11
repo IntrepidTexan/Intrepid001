@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT_B7 - Ver02</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        img {
+            width: 300px;
+            height: auto;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            object-fit: cover;
+        }
+
+        img:hover {
+            transform: scale(1.05);
+        }
+
+        .video-thumbnail {
+            width: 300px;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .video-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        #slideshow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        #slideshow-container img,
+        #slideshow-container iframe {
+            height: 98%; 
+            max-height: 700px; 
+            width: auto; 
+            border-radius: 8px;
+            box-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5);
+        }
+
+        #close-slideshow {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        #slideshow-nav {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        #prev, #next {
+            font-size: 24px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        #home-link {
+            display: block;
+            margin: 20px;
+            font-size: 18px;
+            text-decoration: none;
+            color: white;
+            background-color: #0078D4;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #home-link:hover {
+            background-color: #005A9E;
+        }
+    </style>
+</head>
+<body>
+    <a href="IntrepidTexan_home.html" id="home-link">Return to Homepage</a>
+    <h1>CAMINO PRIMITIVO, OVIEDO - SANTIAGO DE COMPESTELLO, 2023</h1>
+    <div id="gallery">Loading media...</div>
+
+    <div id="slideshow-container">
+        <button id="close-slideshow">✖</button>
+        <img id="slideshow-img" src="" alt="Slideshow Image">
+        <iframe id="slideshow-video" style="display: none;" width="80%" height="500px" frameborder="0" allowfullscreen></iframe>
+        <div id="slideshow-nav">
+            <button id="prev">⬅</button>
+            <button id="next">➡</button>
+        </div>
+    </div>
+
+    <script>
+        const folderId = "1YNktHme3iMljATTrTv5yPcHdvnfFLeK7";  // Google Drive Folder ID
+        const apiKey = "AIzaSyDHfpdxgiJ8-Ef6GLiCVicMm6NLRGshazY";  // Google API key
+        const gallery = document.getElementById("gallery");
+        const slideshowContainer = document.getElementById("slideshow-container");
+        const slideshowImg = document.getElementById("slideshow-img");
+        const slideshowVideo = document.getElementById("slideshow-video");
+        const closeSlideshow = document.getElementById("close-slideshow");
+        const prevButton = document.getElementById("prev");
+        const nextButton = document.getElementById("next");
+
+        let mediaUrls = [];
+        let currentIndex = 0;
+
+        async function fetchMedia() {
+            try {
+                const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,thumbnailLink)&pageSize=1000`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!data.files || data.files.length === 0) {
+                    gallery.innerHTML = "<p>No media found.</p>";
+                    return;
+                }
+
+                mediaUrls = data.files
+                    .filter(file => file.mimeType.startsWith("image/") || file.mimeType.startsWith("video/"))
+                    .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true })) // Sort by filename
+                    .map(file => ({
+                        id: file.id,
+                        name: file.name,
+                        mimeType: file.mimeType,
+                        thumbnail: file.thumbnailLink || "VideoThumbnail.jpg",
+                        url: file.mimeType.startsWith("image/") 
+                            ? `https://lh3.googleusercontent.com/d/${file.id}` 
+                            : `https://drive.google.com/file/d/${file.id}/preview`
+                    }));
+
+                gallery.innerHTML = mediaUrls.map((media, index) => {
+                    if (media.mimeType.startsWith("image/")) {
+                        return `<img src="${media.url}" alt="${media.name}" data-index="${index}">`;
+                    } else {
+                        return `<div class="video-thumbnail" data-index="${index}">
+                                    <img src="${media.thumbnail}" alt="Video Thumbnail">
+                                    <p>${media.name}</p>
+                                    <div class="video-label">Video</div>
+                                </div>`;
+                    }
+                }).join('');
+            } catch (error) {
+                console.error("Error fetching media:", error);
+                gallery.innerHTML = "<p>Failed to load media.</p>";
+            }
+        }
+
+        function openSlideshow(startIndex) {
+            if (mediaUrls.length > 0) {
+                currentIndex = startIndex;
+                const media = mediaUrls[currentIndex];
+
+                if (media.mimeType.startsWith("image/")) {
+                    slideshowImg.src = media.url;
+                    slideshowImg.style.display = "block";
+                    slideshowVideo.style.display = "none";
+                } else {
+                    slideshowImg.style.display = "none";
+                    slideshowVideo.style.display = "block";
+                    slideshowVideo.src = media.url;
+                }
+
+                slideshowContainer.style.display = "flex";
+
+                // Disable prev/next buttons if at start/end
+                prevButton.disabled = currentIndex === 0;
+                nextButton.disabled = currentIndex === mediaUrls.length - 1;
+            }
+        }
+
+        gallery.addEventListener("click", event => {
+            let target = event.target;
+            if (target.tagName === "IMG" || target.closest('.video-thumbnail')) {
+                const targetIndex = target.closest('.video-thumbnail') ? target.closest('.video-thumbnail').getAttribute('data-index') : target.getAttribute('data-index');
+                currentIndex = parseInt(targetIndex);
+                openSlideshow(currentIndex);
+            }
+        });
+
+        closeSlideshow.addEventListener("click", () => {
+            slideshowContainer.style.display = "none";
+            slideshowVideo.src = "";
+        });
+
+        prevButton.addEventListener("click", () => openSlideshow(currentIndex - 1));
+        nextButton.addEventListener("click", () => openSlideshow(currentIndex + 1));
+
+        // Keyboard navigation: Left Arrow (<) and Right Arrow (>)
+        document.addEventListener("keydown", (event) => {
+            // Left Arrow Key (<) or Comma Key (,)
+            if (event.key === "ArrowLeft" || event.key === "<") {
+                if (currentIndex > 0) {
+                    openSlideshow(currentIndex - 1);
+                }
+            }
+            // Right Arrow Key (>) or Period Key (.)
+            if (event.key === "ArrowRight" || event.key === ">") {
+                if (currentIndex < mediaUrls.length - 1) {
+                    openSlideshow(currentIndex + 1);
+                }
+            }
+        });
+
+        fetchMedia();
+    </script>
+</body>
+</html>
