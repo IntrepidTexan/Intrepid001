@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>INTREPID_TEXAN_TRAVEL</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      background-color: #fefefe;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    h1 {
+      background-color: #802020;
+      color: white;
+      padding: 1rem;
+      margin: 0;
+    }
+
+    p {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+      padding: 1.5rem;
+      max-width: 950px;
+      margin: auto;
+    }
+
+    .thumb {
+      cursor: pointer;
+      border: 2px solid #802020;
+      border-radius: 6px;
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.2s ease;
+      object-fit: cover;
+      aspect-ratio: 16 / 9;
+    }
+
+    .thumb:hover {
+      transform: scale(1.05);
+    }
+
+    .video-title {
+      margin-top: 0.5rem;
+      font-weight: bold;
+      color: #802020;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      position: relative;
+      margin: 5% auto;
+      width: 90%;
+      max-width: 800px;
+      aspect-ratio: 16 / 9;
+      background: black;
+      box-shadow: 0 0 15px #000;
+      border-radius: 8px;
+    }
+
+    .modal-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      font-size: 2.5rem;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      padding: 0 0.25rem;
+    }
+
+    a.back-link {
+      display: inline-block;
+      margin: 2rem auto;
+      text-decoration: none;
+      font-size: 1.1rem;
+      color: #802020;
+      border: 2px solid #802020;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      user-select: none;
+    }
+
+    a.back-link:hover {
+      background-color: #802020;
+      color: white;
+    }
+
+    .coming-soon {
+      opacity: 0.7;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <h1>INTREPID TEXAN'S TRAVEL PAGE</h1>
+  <p>Explore travel tips, destinations, and stories from the bold heart of Texas!</p>
+
+  <div class="grid-container">
+    <!-- LOC01 to LOC10 -->
+    <div onclick="openModal('QhK8zxnP2do')">
+      <img class="thumb" src="https://img.youtube.com/vi/QhK8zxnP2do/hqdefault.jpg" alt="ITALY">
+      <div class="video-title">ITALY</div>
+    </div>
+
+    <div onclick="openModal('2ueM_VHVGCw')">
+      <img class="thumb" src="https://img.youtube.com/vi/2ueM_VHVGCw/hqdefault.jpg" alt="ICELAND">
+      <div class="video-title">ICELAND</div>
+    </div>
+
+    <div onclick="openModal('bBni3ny-4yg')">
+      <img class="thumb" src="https://img.youtube.com/vi/bBni3ny-4yg/hqdefault.jpg" alt="HOT SPRINGS">
+      <div class="video-title">HOT SPRINGS</div>
+    </div>
+
+    <div onclick="openModal('OKs07kEvy_Q')">
+      <img class="thumb" src="https://img.youtube.com/vi/OKs07kEvy_Q/hqdefault.jpg" alt="TX BOATCATION">
+      <div class="video-title">TX BOATCATION</div>
+    </div>
+
+    <div onclick="openModal('GE9PmVItR5U')">
+      <img class="thumb" src="https://img.youtube.com/vi/GE9PmVItR5U/hqdefault.jpg" alt="ALASKA">
+      <div class="video-title">ALASKA</div>
+    </div>
+
+    <div onclick="openModal('GWlpULM7BIE')">
+      <img class="thumb" src="https://img.youtube.com/vi/GWlpULM7BIE/hqdefault.jpg" alt="CA TRAINCATION">
+      <div class="video-title">CA TRAINCATION</div>
+    </div>
+
+    <div onclick="openModal('TYrIHIW2coA')">
+      <img class="thumb" src="https://img.youtube.com/vi/TYrIHIW2coA/hqdefault.jpg" alt="NATIONAL PARKS TOUR">
+      <div class="video-title">NATIONAL PARKS TOUR</div>
+    </div>
+
+    <div onclick="openModal('zBSbt7_Dkqc')">
+      <img class="thumb" src="https://img.youtube.com/vi/zBSbt7_Dkqc/hqdefault.jpg" alt="BELIZE 1">
+      <div class="video-title">BELIZE 1</div>
+    </div>
+
+    <div onclick="openModal('lc9t5qlH71M')">
+      <img class="thumb" src="https://img.youtube.com/vi/lc9t5qlH71M/hqdefault.jpg" alt="THAILAND">
+      <div class="video-title">THAILAND</div>
+    </div>
+
+    <div onclick="openModal('Ne2aTt0S1c8')">
+      <img class="thumb" src="https://img.youtube.com/vi/Ne2aTt0S1c8/hqdefault.jpg" alt="VIETNAM">
+      <div class="video-title">VIETNAM</div>
+    </div>
+
+    <!-- LOC11 to LOC20 (COMING SOON placeholders) -->
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC11">
+      <div class="video-title">LOC11</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC12">
+      <div class="video-title">LOC12</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC13">
+      <div class="video-title">LOC13</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC14">
+      <div class="video-title">LOC14</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC15">
+      <div class="video-title">LOC15</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC16">
+      <div class="video-title">LOC16</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC17">
+      <div class="video-title">LOC17</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC18">
+      <div class="video-title">LOC18</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC19">
+      <div class="video-title">LOC19</div>
+    </div>
+    <div class="coming-soon">
+      <img class="thumb" src="https://placehold.co/320x180?text=COMING+SOON" alt="LOC20">
+      <div class="video-title">LOC20</div>
+    </div>
+  </div>
+
+  <!-- Modal Popup -->
+  <div id="videoModal" class="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <iframe id="modalVideo" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <a class="back-link" href="./IntrepidTexan_home.html">Back to Home</a>
+
+  <script>
+    function openModal(videoId) {
+      const modal = document.getElementById("videoModal");
+      const iframe = document.getElementById("modalVideo");
+      iframe.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0&modestbranding=1&showinfo=0";
+      modal.style.display = "block";
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("videoModal");
+      const iframe = document.getElementById("modalVideo");
+      iframe.src = "";
+      modal.style.display = "none";
+    }
+  </script>
+</body>
+</html>
