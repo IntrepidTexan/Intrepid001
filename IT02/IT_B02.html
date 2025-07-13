@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IT_B1</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+    }
+    .home-link {
+      flex: 0 0 30%;
+      max-width: 200px;
+      text-decoration: none;
+      color: white;
+      background-color: #0078D4;
+      padding: 10px 0;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    .home-link:hover {
+      background-color: #005A9E;
+    }
+    h1 {
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 30px;
+      color: #555;
+    }
+    #gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      align-items: flex-start;
+    }
+    #gallery img {
+      width: 300px;
+      height: auto;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+    #gallery img:hover {
+      transform: scale(1.05);
+    }
+    #slideshow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+    }
+    #slideshow-container img {
+      max-width: 95vw;   /* max width 95% of viewport width */
+      max-height: 95vh;  /* max height 95% of viewport height */
+      width: auto;       /* let width adjust to keep aspect ratio */
+      height: auto;      /* same here */
+      border-radius: 8px;
+      box-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5);
+    }
+    #close-slideshow {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    #slideshow-nav {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    #prev,
+    #next {
+      font-size: 24px;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="button-row">
+    <a href="IT_B.html" class="home-link">Return to Hikes</a>
+    <a href="index.html" class="home-link">Return to Homepage</a>
+  </div>
+
+  <h1>CAMINO FRANCES.2, 2014</h1>
+  <h2>BURGOS - ASTORGA - SANTIAGO DE COMPOSTELA</h2>
+
+  <div id="gallery">Loading images...</div>
+
+  <noscript>
+    <style>#gallery { display: none; }</style>
+    <div style="text-align: center; margin-top: 40px;">
+      <p>This gallery requires JavaScript to function properly.</p>
+      <p>Please enable JavaScript in your browser settings.</p>
+    </div>
+  </noscript>
+
+  <div id="slideshow-container">
+    <button id="close-slideshow" aria-label="Close slideshow">✖</button>
+    <img id="slideshow-img" src="" alt="Slideshow Image" />
+    <div id="slideshow-nav">
+      <button id="prev" aria-label="Previous image">⬅</button>
+      <button id="next" aria-label="Next image">➡</button>
+    </div>
+  </div>
+
+  <script>
+    const folderId = "15fk5Y4WUOhg6yWZkWOhOUCOWcj_p0DH2";  // IntrepidTexan2 GDrive Folder ID
+ //   const apiKey = "AIzaSyDHfpdxgiJ8-Ef6GLiCVicMm6NLRGshazY";  // intrepidtexan.us Google API key
+    const apiKey = "AIzaSyD2ba06STJMsXPv1ZJcFws0GbdXGooz3BM";  // Public Google API key
+    const gallery = document.getElementById("gallery");
+    const slideshowContainer = document.getElementById("slideshow-container");
+    const slideshowImg = document.getElementById("slideshow-img");
+    const closeSlideshow = document.getElementById("close-slideshow");
+    const prevButton = document.getElementById("prev");
+    const nextButton = document.getElementById("next");
+
+    let imageUrls = [];
+    let currentIndex = 0;
+
+    async function fetchImages() {
+      try {
+        const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType)&pageSize=1000`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (!data.files || data.files.length === 0) {
+          gallery.innerHTML = "<p>No images found.</p>";
+          return;
+        }
+
+        imageUrls = data.files
+          .filter(file => file.mimeType.startsWith("image/"))
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(file => ({
+            id: file.id,
+            name: file.name,
+            url: `https://lh3.googleusercontent.com/d/${file.id}`
+          }));
+
+        gallery.innerHTML = imageUrls
+          .map((img, index) =>
+            `<img src="${img.url}" alt="${img.name}" data-index="${index}" loading="lazy">`
+          )
+          .join('');
+      } catch (error) {
+        console.error("Error fetching images:", error);
+        gallery.innerHTML = "<p>Failed to load images.</p>";
+      }
+    }
+
+    function openSlideshow(startIndex) {
+      if (imageUrls.length > 0) {
+        currentIndex = startIndex;
+        updateSlideshowImage();
+        slideshowContainer.style.display = "flex";
+        slideshowContainer.requestFullscreen?.();
+      }
+    }
+
+    function closeSlideshowFunction() {
+      slideshowContainer.style.display = "none";
+      if (document.fullscreenElement) {
+        document.exitFullscreen?.();
+      }
+    }
+
+    function updateSlideshowImage() {
+      slideshowImg.src = imageUrls[currentIndex].url;
+    }
+
+    function showPrevImage() {
+      currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+      updateSlideshowImage();
+    }
+
+    function showNextImage() {
+      currentIndex = (currentIndex + 1) % imageUrls.length;
+      updateSlideshowImage();
+    }
+
+    // Gallery click handler
+    gallery.addEventListener("click", event => {
+      if (event.target.tagName === "IMG") {
+        const index = parseInt(event.target.getAttribute("data-index"));
+        openSlideshow(index);
+      }
+    });
+
+    closeSlideshow.addEventListener("click", closeSlideshowFunction);
+    prevButton.addEventListener("click", showPrevImage);
+    nextButton.addEventListener("click", showNextImage);
+
+    // Keyboard navigation for slideshow
+    document.addEventListener("keydown", (e) => {
+      if (slideshowContainer.style.display === "flex") {
+        switch (e.key) {
+          case "ArrowLeft":
+            showPrevImage();
+            break;
+          case "ArrowRight":
+            showNextImage();
+            break;
+          case "Escape":
+            closeSlideshowFunction();
+            break;
+        }
+      }
+    });
+
+    fetchImages();
+  </script>
+
+  <div class="button-row">
+    <a href="IT_B.html" class="home-link">Return to Hikes</a>
+    <a href="index.html" class="home-link">Return to Homepage</a>
+  </div>
+
+</body>
+</html>
