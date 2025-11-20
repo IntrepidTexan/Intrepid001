@@ -4,14 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT_D</title>
+
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+
+            /* Google Drive background image */
+            background-image: url('https://drive.google.com/uc?export=view&id=1GfuQmKLYBm2_i4898sAU2NkRnt7v0P-Y');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* White translucent layer for readability */
+        .overlay {
+            background: rgba(255, 255, 255, 0.82); 
+            min-height: 100vh;
+            padding: 20px;
+        }
+
         .center {
             text-align: center;
             margin-top: 30px;
         }
+
         .btn {
             display: inline-block;
-            width: 360px;              /* ensures same-size buttons */
+            width: 360px;
             padding: 12px 24px;
             background-color: #007BFF;
             color: white;
@@ -21,12 +42,16 @@
             font-weight: bold;
             margin: 10px 0;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
+
+<div class="overlay">
 
     <h1 style="text-align:center;">ABOUT THE AUTHOR</h1>
 
@@ -39,8 +64,8 @@
     </div>
 
     <div class="center">
-        <a class="btn" 
-           href="https://drive.google.com/file/d/1SA_MJnJcTjPGsIi3yfBY51HsMwYiMjpp/view?usp=drive_link" 
+        <a class="btn"
+           href="https://drive.google.com/file/d/1SA_MJnJcTjPGsIi3yfBY51HsMwYiMjpp/view?usp=drive_link"
            target="_blank">
            My Voice
         </a>
@@ -49,6 +74,8 @@
     <p class="center">
         <a href="IntrepidTexan_home.html">Back to Home</a>
     </p>
+
+</div>
 
 </body>
 </html>
