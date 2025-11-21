@@ -94,7 +94,7 @@
       flex-direction: column;
     }
     #slideshow-container img {
-      /* size will be controlled by JS for smart zoom */
+      /* size controlled by JS */
       width: auto;
       height: auto;
       border-radius: 0;
@@ -224,11 +224,9 @@
       }
     }
 
-    // Smart scale: as big as possible without cropping,
-    // but avoid huge black borders if we can.
+    // Scale so one edge would touch the screen (contain),
+    // then back off 5% so you always see a thin border.
     function rescaleCurrentImage() {
-      if (!slideshowImg.src) return;
-
       const img = slideshowImg;
       const naturalW = img.naturalWidth;
       const naturalH = img.naturalHeight;
@@ -237,28 +235,14 @@
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
-      // Base contain scale (no cropping)
-      let scale = Math.min(vw / naturalW, vh / naturalH);
+      // Base "edge reached" scale (no cropping)
+      let baseScale = Math.min(vw / naturalW, vh / naturalH);
 
-      let displayedW = naturalW * scale;
-      let displayedH = naturalH * scale;
+      // Back off 5%
+      const scale = baseScale * 0.95;
 
-      let marginX = vw - displayedW;
-      let marginY = vh - displayedH;
-
-      const threshold = 150; // px of extra space we’re willing to trim
-
-      // Gentle auto-zoom if there’s a lot of empty space,
-      // but only if we still don't exceed viewport.
-      if (marginX > threshold && naturalW * (scale * 1.15) <= vw) {
-        scale *= 1.15;
-      }
-      if (marginY > threshold && naturalH * (scale * 1.15) <= vh) {
-        scale *= 1.15;
-      }
-
-      displayedW = naturalW * scale;
-      displayedH = naturalH * scale;
+      const displayedW = naturalW * scale;
+      const displayedH = naturalH * scale;
 
       img.style.width = displayedW + "px";
       img.style.height = displayedH + "px";
@@ -268,7 +252,6 @@
       const img = slideshowImg;
       const url = imageUrls[currentIndex].url;
 
-      // Reset size so we don't carry over old dimensions
       img.style.width = "auto";
       img.style.height = "auto";
 
@@ -284,11 +267,8 @@
       updateSlideshowImage();
       slideshowContainer.style.display = "flex";
 
-      // Try to enter fullscreen
       if (!document.fullscreenElement && slideshowContainer.requestFullscreen) {
-        slideshowContainer.requestFullscreen().catch(() => {
-          // Ignore if blocked
-        });
+        slideshowContainer.requestFullscreen().catch(() => {});
       }
     }
 
@@ -328,7 +308,6 @@
       }
     });
 
-    // Re-scale the current image if the window size changes
     window.addEventListener("resize", () => {
       if (slideshowContainer.style.display === "flex") {
         rescaleCurrentImage();
