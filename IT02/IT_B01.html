@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>IT_B02</title>
+  <title>IT_B1</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
+      margin: 0;
+      padding: 0;
     }
     .button-row {
       display: flex;
       justify-content: center;
       gap: 30px;
       margin: 20px 0;
+      flex-wrap: wrap;
     }
     .home-link {
-      flex: 0 0 30%;
+      flex: 0 0 auto;
+      min-width: 160px;
       max-width: 200px;
       text-decoration: none;
       color: white;
@@ -40,16 +44,20 @@
       margin-bottom: 30px;
       color: #555;
     }
+
+    /* --- GALLERY: 5 thumbs per row --- */
     #gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
       gap: 15px;
-      margin-top: 20px;
+      margin: 20px auto 40px auto;
+      max-width: 1600px; /* 5 columns x ~300px */
+      padding: 0 10px;
       align-items: flex-start;
+      box-sizing: border-box;
     }
     #gallery img {
-      width: 300px;
+      width: 100%;
       height: auto;
       cursor: pointer;
       border-radius: 8px;
@@ -59,13 +67,26 @@
     #gallery img:hover {
       transform: scale(1.05);
     }
+
+    /* On narrow screens, reduce columns so it doesn't get crazy tiny */
+    @media (max-width: 1100px) {
+      #gallery { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 900px) {
+      #gallery { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      #gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* --- FULLSCREEN SLIDESHOW --- */
     #slideshow-container {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
       display: none;
       justify-content: center;
       align-items: center;
@@ -73,34 +94,35 @@
       flex-direction: column;
     }
     #slideshow-container img {
-      max-width: 95vw;
-      max-height: 95vh;
+      max-width: 100vw;
+      max-height: 100vh;
       width: auto;
       height: auto;
-      border-radius: 8px;
-      box-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5);
+      border-radius: 0;
+      box-shadow: none;
     }
     #close-slideshow {
-      position: absolute;
+      position: fixed;
       top: 20px;
       right: 20px;
-      font-size: 24px;
+      font-size: 28px;
       color: white;
       background: none;
       border: none;
       cursor: pointer;
     }
     #slideshow-nav {
-      position: absolute;
+      position: fixed;
       bottom: 20px;
       width: 100%;
       display: flex;
       justify-content: space-between;
-      padding: 0 20px;
+      padding: 0 40px;
+      box-sizing: border-box;
     }
     #prev,
     #next {
-      font-size: 24px;
+      font-size: 32px;
       color: white;
       background: none;
       border: none;
@@ -114,8 +136,8 @@
     <a href="index.html" class="home-link">Return to Homepage</a>
   </div>
 
-  <h1>CAMINO FRANCES.2, 2014</h1>
-  <h2>BURGOS - ASTORGA - SANTIAGO DE COMPOSTELA</h2>
+  <h1>CAMINO FRANCES.1, 2013</h1>
+  <h2>ASTORGA - SANTIAGO DE COMPOSTELA</h2>
 
   <div id="gallery">Loading images...</div>
 
@@ -140,10 +162,7 @@
     // === CONFIG ===
     const repoOwner = "IntrepidTexan";
     const repoName = "Intrepid001";
-
-    // Folder in your repo that holds this hike's images:
-    // For 2014 use Camino201407; for 2013 use Camino201306, etc.
-    const folderPath = "IT02/images/Camino201407";
+    const folderPath = "IT02/images/Camino201306"; // this hike's folder
 
     const gallery = document.getElementById("gallery");
     const slideshowContainer = document.getElementById("slideshow-container");
@@ -159,9 +178,9 @@
       gallery.textContent = "Loading images...";
 
       const apiUrl =
-        "https://api.github.com/repos/"
-        + repoOwner + "/" + repoName
-        + "/contents/" + folderPath;
+        "https://api.github.com/repos/" +
+        repoOwner + "/" + repoName +
+        "/contents/" + folderPath;
 
       try {
         const response = await fetch(apiUrl);
@@ -210,10 +229,20 @@
       currentIndex = startIndex;
       updateSlideshowImage();
       slideshowContainer.style.display = "flex";
+
+      // Try to enter fullscreen for true full-screen viewing
+      if (!document.fullscreenElement && slideshowContainer.requestFullscreen) {
+        slideshowContainer.requestFullscreen().catch(() => {
+          // Some browsers may block it; ignore error, still show overlay.
+        });
+      }
     }
 
     function closeSlideshowFunction() {
       slideshowContainer.style.display = "none";
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
     }
 
     function updateSlideshowImage() {
