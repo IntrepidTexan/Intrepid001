@@ -68,7 +68,7 @@
       transform: scale(1.05);
     }
 
-    /* On narrow screens, reduce columns so it doesn't get crazy tiny */
+    /* On narrower screens, reduce columns */
     @media (max-width: 1100px) {
       #gallery { grid-template-columns: repeat(4, 1fr); }
     }
@@ -94,8 +94,7 @@
       flex-direction: column;
     }
     #slideshow-container img {
-      max-width: 100vw;
-      max-height: 100vh;
+      /* size will be controlled by JS for smart zoom */
       width: auto;
       height: auto;
       border-radius: 0;
@@ -225,15 +224,70 @@
       }
     }
 
+    // Smart scale: as big as possible without cropping,
+    // but avoid huge black borders if we can.
+    function rescaleCurrentImage() {
+      if (!slideshowImg.src) return;
+
+      const img = slideshowImg;
+      const naturalW = img.naturalWidth;
+      const naturalH = img.naturalHeight;
+      if (!naturalW || !naturalH) return;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Base contain scale (no cropping)
+      let scale = Math.min(vw / naturalW, vh / naturalH);
+
+      let displayedW = naturalW * scale;
+      let displayedH = naturalH * scale;
+
+      let marginX = vw - displayedW;
+      let marginY = vh - displayedH;
+
+      const threshold = 150; // px of extra space we’re willing to trim
+
+      // Gentle auto-zoom if there’s a lot of empty space,
+      // but only if we still don't exceed viewport.
+      if (marginX > threshold && naturalW * (scale * 1.15) <= vw) {
+        scale *= 1.15;
+      }
+      if (marginY > threshold && naturalH * (scale * 1.15) <= vh) {
+        scale *= 1.15;
+      }
+
+      displayedW = naturalW * scale;
+      displayedH = naturalH * scale;
+
+      img.style.width = displayedW + "px";
+      img.style.height = displayedH + "px";
+    }
+
+    function updateSlideshowImage() {
+      const img = slideshowImg;
+      const url = imageUrls[currentIndex].url;
+
+      // Reset size so we don't carry over old dimensions
+      img.style.width = "auto";
+      img.style.height = "auto";
+
+      img.onload = () => {
+        rescaleCurrentImage();
+      };
+
+      img.src = url;
+    }
+
     function openSlideshow(startIndex) {
       currentIndex = startIndex;
       updateSlideshowImage();
       slideshowContainer.style.display = "flex";
 
-      // Try to enter fullscreen for true full-screen viewing
+      // Try to enter fullscreen
       if (!document.fullscreenElement && slideshowContainer.requestFullscreen) {
         slideshowContainer.requestFullscreen().catch(() => {
-          // Some browsers may block it; ignore error, still show overlay.
+          // Ignore if blocked
         });
       }
     }
@@ -243,10 +297,6 @@
       if (document.fullscreenElement && document.exitFullscreen) {
         document.exitFullscreen().catch(() => {});
       }
-    }
-
-    function updateSlideshowImage() {
-      slideshowImg.src = imageUrls[currentIndex].url;
     }
 
     function showPrevImage() {
@@ -275,6 +325,13 @@
         if (e.key === "ArrowLeft") showPrevImage();
         else if (e.key === "ArrowRight") showNextImage();
         else if (e.key === "Escape") closeSlideshowFunction();
+      }
+    });
+
+    // Re-scale the current image if the window size changes
+    window.addEventListener("resize", () => {
+      if (slideshowContainer.style.display === "flex") {
+        rescaleCurrentImage();
       }
     });
 
