@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Hi — From the Intrepid Texan (my hiking trail handle)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
     body {
         font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -13,11 +14,30 @@
         color: #333;
         line-height: 1.6;
     }
+
+    /* Navigation Bar */
+    nav {
+        background: #14273f;
+        padding: 12px 20px;
+        text-align: center;
+    }
+    nav a {
+        color: #fff;
+        margin: 0 15px;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    nav a:hover {
+        opacity: 0.7;
+    }
+
     header {
         background: #1f3b5c;
         color: white;
         padding: 40px 20px;
         text-align: center;
+        animation: fadeIn 1.2s ease;
     }
     header h1 {
         margin: 0;
@@ -29,6 +49,7 @@
         margin-top: 10px;
         opacity: 0.9;
     }
+
     .container {
         max-width: 900px;
         margin: 40px auto;
@@ -36,20 +57,42 @@
         padding: 40px;
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        animation: fadeIn 1.2s ease;
     }
+
     h2 {
         color: #1f3b5c;
         margin-top: 40px;
         margin-bottom: 10px;
         font-weight: 400;
     }
+
     p {
         margin-bottom: 20px;
     }
+
     ul {
         margin-bottom: 20px;
         padding-left: 20px;
     }
+
+    /* Section Divider */
+    .divider {
+        height: 1px;
+        background: #ddd;
+        margin: 40px 0;
+    }
+
+    /* UT Austin Badge */
+    .badge-box {
+        background: #fff7e6;
+        border-left: 5px solid #d48806;
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 6px;
+    }
+
+    /* Contact Box */
     .contact-box {
         background: #eef4ff;
         border-left: 5px solid #1f3b5c;
@@ -60,16 +103,43 @@
     .contact-box strong {
         font-size: 1.2rem;
     }
+
+    /* Photo Placeholder */
+    .photo-box {
+        width: 100%;
+        height: 260px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        font-size: 1.1rem;
+        font-style: italic;
+    }
+
     footer {
         text-align: center;
         padding: 30px;
         color: #777;
         font-size: 0.9rem;
     }
+
+    /* Fade-in Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 </head>
 
 <body>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/hi">Hi</a>
+</nav>
 
 <header>
     <h1>Hello — and Welcome</h1>
@@ -78,12 +148,18 @@
 
 <div class="container">
 
+    <div class="photo-box">
+        Optional photo area — add later if you want
+    </div>
+
     <p>
         If you're reading this, something about you caught my attention. Attraction may begin with the physical, 
         but lasting connection comes from shared values, compatible goals, and that rare spark of chemistry. 
         This page is simply a comfortable way for you to learn a little about me and decide whether you'd like 
         to continue the conversation.
     </p>
+
+    <div class="divider"></div>
 
     <h2>Values & Faith</h2>
     <p>
@@ -96,21 +172,39 @@
         faith background as long as Christ is recognized as Messiah.
     </p>
 
+    <div class="divider"></div>
+
     <h2>Career & Passions</h2>
-    <p>
-        My professional life was extraordinary:
-    </p>
+    <p>My professional life was extraordinary:</p>
+
     <ul>
         <li>NASA engineer/manager for ~25 years</li>
-        <li>USAF officer and fighter pilot for ~30 years (most simotaneously in the Reserves)</li>
+        <li>USAF officer and fighter pilot for ~30 years (most simultaneously in the Reserves)</li>
         <li>Commander of USAF forces at Kandahar & NATO Senior Airfield Authority</li>
         <li>Short‑listed for astronaut selection</li>
         <li>Holder of multiple FAA licenses (including commercial), though I never used the commercial license because the airline lifestyle didn’t appeal to me</li>
         <li>Inducted into the UT Austin Aerospace Engineering Academy of Distinguished Alumni (2022)</li>
     </ul>
+
     <p>
         I've traveled to 40+ countries, all seven continents, and even spent a week at the South Pole. Adventure is part of my nature.
     </p>
+
+    <div class="badge-box">
+        <strong>UT Austin Recognition</strong>
+        <p>
+            In 2022, I was honored to be inducted into the 
+            <strong>Aerospace Engineering & Engineering Mechanics Academy of Distinguished Alumni</strong> 
+            at The University of Texas at Austin.
+        </p>
+        <p>
+            <a href="https://ae.utexas.edu/news/2022-ase-em-academy-of-distinguished-alumni/" target="_blank">
+                View my official UT Austin profile
+            </a>
+        </p>
+    </div>
+
+    <div class="divider"></div>
 
     <h2>Personal Life</h2>
     <p>
@@ -124,6 +218,8 @@
         and still very much part of my heart. I do not tolerate insinuations about that relationship.
     </p>
 
+    <div class="divider"></div>
+
     <h2>Friendships & Social Life</h2>
     <p>
         I connect more easily with women than men — perhaps because men often compete with each other. I have female 
@@ -131,11 +227,14 @@
         so I’m upfront about it.
     </p>
 
+    <div class="divider"></div>
+
     <h2>Health & Lifestyle</h2>
     <p>
         My health is excellent, and my energy level matches men a decade or two younger. I don’t need a nurse, purse,
         or maid — just a partner who values me for who I am rather than what I can provide.
     </p>
+
     <p>My interests include:</p>
     <ul>
         <li>Long‑distance hiking (eight Camino trails so far)</li>
@@ -147,6 +246,8 @@
         <li>Making my companion feel appreciated</li>
     </ul>
 
+    <div class="divider"></div>
+
     <h2>Relationships & Intentions</h2>
     <p>
         I'm a one‑woman man. I can only invest deeply in one emotional and physical relationship at a time. 
@@ -157,12 +258,16 @@
         friendship, and aligned expectations. Ultimately, I'm seeking a lifelong companion — ideally a wife.
     </p>
 
+    <div class="divider"></div>
+
     <h2>Life Challenges & Growth</h2>
     <p>
         After returning from Afghanistan, my marriage dissolved and I faced difficult emotional terrain. 
         I was later diagnosed with moderate PTSD and have been in counseling for several years. I'm grounded, 
         stable, and generally well‑behaved these days :).
     </p>
+
+    <div class="divider"></div>
 
     <h2>Physical Snapshot</h2>
     <p>
@@ -181,7 +286,7 @@
 </div>
 
 <footer>
-    © Intrepid Texan
+    © Intrepid Texan — <a href="/" style="color:#555;">Return to Home</a>
 </footer>
 
 </body>
