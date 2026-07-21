@@ -3,38 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <title>Sunsets</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
     background: #111;
     color: #eee;
     margin: 0;
-    padding: 20px;
+    padding: 0;
   }
+
   h1 {
     text-align: center;
-    margin-bottom: 30px;
+    padding: 20px;
+    margin: 0;
   }
+
   .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    max-width: 1200px;   /* keeps things nice on huge monitors */
+    margin: 0 auto;      /* centers the gallery */
+    padding: 20px;
   }
+
   .gallery img {
-    width: 100%;
+    width: 100%;         /* full width on laptop or phone */
+    height: auto;        /* keeps aspect ratio */
+    display: block;
+    margin-bottom: 20px;
     border-radius: 8px;
-    object-fit: cover;
   }
 </style>
+
 </head>
 <body>
+
 <h1>Sunsets</h1>
 
 <div class="gallery">
   <img src="sunset01.jpg" alt="">
   <img src="sunset02.jpg" alt="">
   <img src="sunset03.jpg" alt="">
-  <img src="sunset04.png" alt="">
+  <img src="sunset04.jpg" alt="">
   <img src="sunset05.jpg" alt="">
 </div>
 
