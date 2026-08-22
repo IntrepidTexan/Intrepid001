@@ -4,15 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>IT_B</title>
+
   <style>
     body {
       font-size: 20px;
       font-family: Arial, sans-serif;
-      text-align: justify;
       max-width: 900px;
       margin: auto;
       padding: 20px;
+      text-align: left;        /* paragraphs left-aligned */
+      line-height: 1.5;
     }
+
+    h1, h2 {
+      text-align: center;      /* all titles centered */
+    }
+
     .header-image {
       display: block;
       max-width: 100%;
@@ -21,10 +28,11 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+
     .hotbutton {
       display: block;
-      width: 100ch;
-      max-width: 100%;
+      width: 100%;
+      max-width: 100ch;
       padding: 12px 20px;
       margin: 15px auto;
       background-color: #0078D4;
@@ -35,39 +43,50 @@
       text-align: center;
       box-sizing: border-box;
     }
+
     .hotbutton:hover {
       background-color: #005A9E;
     }
+
     .hotbutton.disabled {
       background-color: #888;
       opacity: 0.5;
       pointer-events: none;
     }
+
     .footer-link {
       display: block;
       text-align: center;
       margin: 40px auto 20px;
       font-size: 18px;
     }
+
+    p {
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 1rem;         /* keeps text off phone edges */
+      max-width: 80ch;         /* perfect reading width */
+    }
   </style>
 </head>
+
 <body>
 
-  <h2 style="text-align:center; font-style:italic; margin-top:0;">
+  <h2 style="font-style:italic; margin-top:0;">
     “It is not the mountain we conquer, but ourselves.”
   </h2>
 
-  <!-- Linked local Camino map image -->
   <a href="https://caminoways.com/history-of-the-camino-de-santiago" target="_blank" rel="noopener noreferrer">
     <img src="CaminoDeSantiagoTrails.jpg" alt="Camino de Santiago Trails Map" class="header-image" />
   </a>
 
   <h1>My Favorite Camino Santiago Hikes</h1>
+
   <p>
-    Each of these journeys along the Camino de Santiago has been deeply
-    meaningful, both spiritually and personally. I've walked through sunlit
-    vineyards, along stormy coastlines, and into peaceful villages where time
-    seems to stand still. Here are my favorites, each with its own story.
+    Each of these journeys along the Camino de Santiago has been deeply meaningful,
+    both spiritually and personally. I've walked through sunlit vineyards, along
+    stormy coastlines, and into peaceful villages where time seems to stand still.
+    Here are my favorites, each with its own story.
   </p>
 
   <a class="footer-link" href="IntrepidTexan_home.html">Back to Home</a>
@@ -81,13 +100,12 @@
   <a class="hotbutton" href="IT_B07.html">CAMINO PRIMITIVO — 2023</a>
   <a class="hotbutton" href="IT_B08.html">CAMINO MADRID — 2024</a>
   <a class="hotbutton" href="IT_B09.html">CAMINO SAN SALVADOR — 2024</a>
+
   <a class="hotbutton disabled" href="#">SPRING 2027 HIKE COMING SOON</a>
   <a class="hotbutton disabled" href="#">HIKE COMING SOON</a>
   <a class="hotbutton disabled" href="#">HIKE COMING SOON</a>
   <a class="hotbutton disabled" href="#">HIKE COMING SOON</a>
   <a class="hotbutton disabled" href="#">HIKE COMING SOON</a>
-  
+
 </body>
 </html>
-
-    
