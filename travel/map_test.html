@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Map Test</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    /* Full-screen map */
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Optional: make pop-up images look nice */
+    .popup-img {
+        width: 180px;
+        border-radius: 6px;
+        margin-top: 6px;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Map container -->
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Create the map
+    var map = L.map('map').setView([20, 0], 2); // world view
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // -----------------------------
+    // TEST PINS (you can delete later)
+    // -----------------------------
+
+    // France
+    L.marker([48.8566, 2.3522]).addTo(map)
+      .bindPopup(`
+        <b>France</b><br>
+        <img src="photos/france/test1.jpg" class="popup-img"><br>
+        Placeholder photo from France.
+      `);
+
+    // Thailand
+    L.marker([13.7563, 100.5018]).addTo(map)
+      .bindPopup(`
+        <b>Thailand</b><br>
+        <img src="photos/thailand/test2.jpg" class="popup-img"><br>
+        Placeholder photo from Thailand.
+      `);
+
+    // USA - Texas
+    L.marker([31.9686, -99.9018]).addTo(map)
+      .bindPopup(`
+        <b>Texas</b><br>
+        <img src="photos/usa/texas/test3.jpg" class="popup-img"><br>
+        Placeholder photo from Texas.
+      `);
+</script>
+
+</body>
+</html>
 
