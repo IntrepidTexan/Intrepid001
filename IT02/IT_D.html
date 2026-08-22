@@ -11,30 +11,33 @@
             padding: 0;
             font-family: Arial, sans-serif;
 
-            /* GitHub raw background image */
+            /* Background image */
             background-image: url('https://raw.githubusercontent.com/IntrepidTexan/Intrepid001/main/IT02/147F16%20shuttle3.jpg');
-            background-size: contain;       /* FIX: fits entire image to phone width */
-            background-repeat: no-repeat;   /* prevents tiling */
+            background-size: contain;       /* fits entire image to phone width */
+            background-repeat: no-repeat;
             background-position: top center;
-            background-attachment: scroll;  /* FIX: prevents Android translucency bug */
+            background-attachment: scroll;
         }
 
-        /* Mobile / small-screen fix */
+        /* Mobile fix */
         @media (max-width: 768px) {
             body {
-                background-size: contain;   /* ensures perfect fit on Android */
+                background-size: contain;
                 background-position: top center;
                 background-repeat: no-repeat;
             }
         }
 
-        /* Translucent white overlay for readability */
+        /* Overlay */
         .overlay {
-            background: rgba(255, 255, 255, 0.35); /* lighter opacity */
+            background: rgba(255, 255, 255, 0.35);
             min-height: 100vh;
             padding: 20px;
 
-            /* smooths contrast across entire image */
+            /* FIX: limit width so content never exceeds image width */
+            max-width: 600px;
+            margin: 0 auto;
+
             backdrop-filter: brightness(1.1);
         }
 
@@ -44,8 +47,9 @@
         }
 
         .btn {
-            display: inline-block;
-            width: 360px;
+            display: block;
+            width: 100%;
+            max-width: 360px;   /* FIX: buttons no longer wider than image */
             padding: 12px 24px;
             background-color: #007BFF;
             color: white;
@@ -53,7 +57,8 @@
             font-size: 20px;
             border-radius: 8px;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 10px auto;
+            text-align: center;
         }
 
         .btn:hover {
