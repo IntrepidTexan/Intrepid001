@@ -21,108 +21,11 @@
       margin: 0;
     }
 
-    p {
-      margin-top: 1rem;
-      font-size: 1.1rem;
-    }
-
-    /* Responsive Grid */
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-      width: 95%;
-      max-width: 950px;
-      margin: auto;
-    }
-
-    .thumb {
-      cursor: pointer;
-      border: 2px solid #802020;
-      border-radius: 6px;
-      width: 100%;
-      height: auto;
-      display: block;
-      transition: transform 0.2s ease;
-      object-fit: cover;
-      aspect-ratio: 16 / 9;
-      touch-action: manipulation;
-    }
-
-    .thumb:hover {
-      transform: scale(1.05);
-    }
-
-    .video-title {
-      margin-top: 0.5rem;
-      font-weight: bold;
+    .notice {
+      margin-top: 3rem;
+      font-size: 1.6rem;
       color: #802020;
-      font-size: 0.9rem;
-      user-select: none;
-    }
-
-    /* Modal Styling */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: rgba(0, 0, 0, 0.85);
-      touch-action: none;
-    }
-
-    .modal-content {
-      position: relative;
-      margin: 5% auto;
-      width: 90%;
-      max-width: 800px;
-      aspect-ratio: 16 / 9;
-      background: black;
-      box-shadow: 0 0 15px #000;
-      border-radius: 8px;
-    }
-
-    .modal-content iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      border-radius: 8px;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      font-size: 2.5rem;
-      color: white;
-      cursor: pointer;
-      user-select: none;
       font-weight: bold;
-      padding: 0 0.25rem;
-    }
-
-    /* Mobile Modal Adjustments */
-    @media (max-width: 768px) {
-      .modal-content {
-        width: 95%;
-        margin-top: 20%;
-      }
-      .close-btn {
-        top: -30px;
-        font-size: 2rem;
-      }
-      .video-title {
-        font-size: 0.8rem;
-      }
-      .thumb {
-        aspect-ratio: 4 / 3;
-        border-width: 1px;
-      }
     }
 
     a.back-link {
@@ -141,16 +44,19 @@
       background-color: #802020;
       color: white;
     }
-
-    .coming-soon {
-      opacity: 0.7;
-      cursor: default;
-    }
   </style>
 </head>
 
 <body>
+
   <h1>INTREPID TEXAN'S TRAVEL PAGE</h1>
+
+  <div class="notice">UNDER CONSTRUCTION</div>
+
+  <!--
+  ============================================================
+  ALL VIDEO GRID CONTENT COMMENTED OUT — SAFE FOR RESTORATION
+  ============================================================
 
   <div class="grid-container">
 
@@ -276,15 +182,12 @@
 
   </div>
 
-  <!-- Modal Popup -->
   <div id="videoModal" class="modal" onclick="closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <iframe id="modalVideo" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
   </div>
-
-  <a class="back-link" href="./IntrepidTexan_home.html">Back to Home</a>
 
   <script>
     function openModal(videoId) {
@@ -301,6 +204,10 @@
       modal.style.display = "none";
     }
   </script>
+
+  -->
+
+  <a class="back-link" href="./IntrepidTexan_home.html">Back to Home</a>
 
 </body>
 </html>
