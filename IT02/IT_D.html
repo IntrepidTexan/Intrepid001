@@ -13,25 +13,29 @@
 
             /* GitHub raw background image */
             background-image: url('https://raw.githubusercontent.com/IntrepidTexan/Intrepid001/main/IT02/147F16%20shuttle3.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-size: contain;       /* FIX: fits entire image to phone width */
+            background-repeat: no-repeat;   /* prevents tiling */
+            background-position: top center;
+            background-attachment: scroll;  /* FIX: prevents Android translucency bug */
         }
 
         /* Mobile / small-screen fix */
         @media (max-width: 768px) {
             body {
-                background-size: contain;
-                background-position: top;
+                background-size: contain;   /* ensures perfect fit on Android */
+                background-position: top center;
                 background-repeat: no-repeat;
             }
         }
 
         /* Translucent white overlay for readability */
         .overlay {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.35); /* lighter opacity */
             min-height: 100vh;
             padding: 20px;
+
+            /* smooths contrast across entire image */
+            backdrop-filter: brightness(1.1);
         }
 
         .center {
@@ -70,8 +74,8 @@
 <body>
 <div class="overlay">
 
-    <!-- blank lines to reveal the background image -->
-    <br><br><br><br><br><br><br><br>
+    <!-- Two blank lines to reveal the background image -->
+    <br><br>
 
     <div class="center">
         <a class="btn"
