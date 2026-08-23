@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Travel Map</title>
 
-<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
 <style>
@@ -32,6 +31,39 @@
         background-color: #00aaff;
         border-radius: 50%;
     }
+
+    /* Full-screen photo overlay */
+    #photo-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        flex-direction: column;
+        touch-action: none;
+    }
+
+    #photo-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+    }
+
+    /* Back arrow */
+    #back-arrow {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+    }
 </style>
 </head>
 
@@ -39,22 +71,56 @@
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
+<!-- Full-screen photo viewer -->
+<div id="photo-overlay">
+    <div id="back-arrow" onclick="closePhoto()">←</div>
+    <img id="overlay-img" src="">
+</div>
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-    // Create the map
+    function showPhoto(src) {
+        document.getElementById('overlay-img').src = src;
+        document.getElementById('photo-overlay').style.display = 'flex';
+    }
+
+    function closePhoto() {
+        document.getElementById('photo-overlay').style.display = 'none';
+    }
+
+    // Swipe-to-close
+    let startX = 0;
+    let startY = 0;
+
+    const overlay = document.getElementById('photo-overlay');
+
+    overlay.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    overlay.addEventListener('touchend', function(e) {
+        let endX = e.changedTouches[0].clientX;
+        let endY = e.changedTouches[0].clientY;
+
+        let diffX = Math.abs(endX - startX);
+        let diffY = Math.abs(endY - startY);
+
+        if (diffX > 50 || diffY > 50) {
+            closePhoto();
+        }
+    });
+
     var map = L.map('map').setView([20, 0], 2);
 
-    // Add OpenStreetMap tiles (single world view)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap',
-        noWrap: true,                // prevents repeating the world
-        bounds: [[-90, -180], [90, 180]] // defines visible area
+        noWrap: true,
+        bounds: [[-90, -180], [90, 180]]
     }).addTo(map);
 
-    // Circle icon definition
     const circleIcon = L.divIcon({
         className: 'circle-marker',
         iconSize: [8, 8],
@@ -62,110 +128,94 @@
         popupAnchor: [0, -6]
     });
 
-    // -----------------------------
-    // MARKERS
-    // -----------------------------
-
     // Afghanistan
     L.marker([34.56924097766155, 69.21269647239585], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <a href="photos/afghan1.JPG" target="_blank">
-            <img src="photos/afghan1.JPG" class="popup-img">
-        </a><br>Kabul airport
+        <img src="photos/afghan1.JPG" class="popup-img" onclick="showPhoto('photos/afghan1.JPG')">
+        <br>Kabul airport
       `);
 
     L.marker([36.687175152418114, 67.14808398937268], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <a href="photos/afghan2.JPG" target="_blank">
-            <img src="photos/afghan2.JPG" class="popup-img">
-        </a><br>Masar-i-Sharif area
+        <img src="photos/afghan2.JPG" class="popup-img" onclick="showPhoto('photos/afghan2.JPG')">
+        <br>Masar-i-Sharif area
       `);
 
     L.marker([31.536520320085124, 65.89502725585834], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <a href="photos/afghan3.JPG" target="_blank">
-            <img src="photos/afghan3.JPG" class="popup-img">
-        </a><br>Kandahar area
+        <img src="photos/afghan3.JPG" class="popup-img" onclick="showPhoto('photos/afghan3.JPG')">
+        <br>Kandahar area
       `);
 
     // Alaska
     L.marker([61.45447766239526, -149.36818757402776], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Alaska</b><br>
-        <a href="photos/alaska1.JPG" target="_blank">
-            <img src="photos/alaska1.JPG" class="popup-img">
-        </a><br>Anchorage area
+        <img src="photos/alaska1.JPG" class="popup-img" onclick="showPhoto('photos/alaska1.JPG')">
+        <br>Anchorage area
       `);
 
     // Antarctica
     L.marker([-77.84238666818321, 166.6709738619791], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Antarctica</b><br>
-        <a href="photos/mcmurdo1.JPG" target="_blank">
-            <img src="photos/mcmurdo1.JPG" class="popup-img">
-        </a><br>McMurdo
+        <img src="photos/mcmurdo1.JPG" class="popup-img" onclick="showPhoto('photos/mcmurdo1.JPG')">
+        <br>McMurdo
       `);
 
     L.marker([-77.84345474348973, 166.7814336681775], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Antarctica</b><br>
-        <a href="photos/antarctica1.JPG" target="_blank">
-            <img src="photos/antarctica1.JPG" class="popup-img">
-        </a><br>Ross Ice Shelf
+        <img src="photos/antarctica1.JPG" class="popup-img" onclick="showPhoto('photos/antarctica1.JPG')">
+        <br>Ross Ice Shelf
       `);
 
     L.marker([-90, 0.0], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Antarctica</b><br>
-        <a href="photos/southpole1.JPG" target="_blank">
-            <img src="photos/southpole1.JPG" class="popup-img">
-        </a><br>South Pole
+        <img src="photos/southpole1.JPG" class="popup-img" onclick="showPhoto('photos/southpole1.JPG')">
+        <br>South Pole
       `);
 
     // Iceland
     L.marker([63.87929082426407, -22.445294501880408], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Iceland</b><br>
-        <a href="photos/iceland1.JPG" target="_blank">
-            <img src="photos/iceland1.JPG" class="popup-img">
-        </a><br>Blue Lagoon
+        <img src="photos/iceland1.JPG" class="popup-img" onclick="showPhoto('photos/iceland1.JPG')">
+        <br>Blue Lagoon
       `);
 
     // Italy
     L.marker([41.889523300981125, 12.491522794092056], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Italy</b><br>
-        <a href="photos/rome1.JPG" target="_blank">
-            <img src="photos/rome1.JPG" class="popup-img">
-        </a><br>Rome
+        <img src="photos/rome1.JPG" class="popup-img" onclick="showPhoto('photos/rome1.JPG')">
+        <br>Rome
       `);
 
     L.marker([43.722773637437534, 10.394783824061053], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Italy</b><br>
-        <a href="photos/pisa1.JPG" target="_blank">
-            <img src="photos/pisa1.JPG" class="popup-img">
-        </a><br>Pisa
+        <img src="photos/pisa1.JPG" class="popup-img" onclick="showPhoto('photos/pisa1.JPG')">
+        <br>Pisa
       `);
 
     L.marker([40.74857261951603, 14.48413938233574], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Italy</b><br>
-        <a href="photos/pompei1.JPG" target="_blank">
-            <img src="photos/pompei1.JPG" class="popup-img">
-        </a><br>Pompei
+        <img src="photos/pompei1.JPG" class="popup-img" onclick="showPhoto('photos/pompei1.JPG')">
+        <br>Pompei
       `);
 
     // Texas
     L.marker([29.505248067576897, -100.02638609576937], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Texas</b><br>
-        <a href="photos/brokeoak1.JPG" target="_blank">
-            <img src="photos/brokeoak1.JPG" class="popup-img">
-        </a><br>BrokeOak Ranch
+        <img src="photos/brokeoak1.JPG" class="popup-img" onclick="showPhoto('photos/brokeoak1.JPG')">
+        <br>BrokeOak Ranch
       `);
 </script>
 
