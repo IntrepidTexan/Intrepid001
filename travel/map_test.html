@@ -27,13 +27,12 @@
         margin-top: 6px;
     }
 
-    /* Crisp triangle marker */
-    .triangle-marker {
-        width: 0;
-        height: 0;
-        border-left: 7px solid transparent;
-        border-right: 7px solid transparent;
-        border-bottom: 12px solid #00aaff; /* triangle color */
+    /* Small clean circle marker */
+    .circle-marker {
+        width: 8px;
+        height: 8px;
+        background-color: #00aaff; /* marker color */
+        border-radius: 50%;
     }
 </style>
 </head>
@@ -55,12 +54,12 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Triangle icon definition
-    const triangleIcon = L.divIcon({
-        className: 'triangle-marker',
-        iconSize: [14, 12],
-        iconAnchor: [7, 12],   // tip of the triangle
-        popupAnchor: [0, -12]
+    // Circle icon definition
+    const circleIcon = L.divIcon({
+        className: 'circle-marker',
+        iconSize: [8, 8],
+        iconAnchor: [4, 4],
+        popupAnchor: [0, -6]
     });
 
     // -----------------------------
@@ -68,39 +67,39 @@
     // -----------------------------
 
     // Afghanistan
-    L.marker([34.56924097766155, 69.21269647239585], { icon: triangleIcon }).addTo(map)
+    L.marker([34.56924097766155, 69.21269647239585], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan1.JPG" class="popup-img"><br>Kabul airport`);
-    L.marker([36.687175152418114, 67.14808398937268], { icon: triangleIcon }).addTo(map)
+    L.marker([36.687175152418114, 67.14808398937268], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan2.JPG" class="popup-img"><br>Masar-i-Sharif area`);
-    L.marker([31.536520320085124, 65.89502725585834], { icon: triangleIcon }).addTo(map)
+    L.marker([31.536520320085124, 65.89502725585834], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan3.JPG" class="popup-img"><br>Kandahar area`);
 
     // Alaska
-    L.marker([61.45447766239526, -149.36818757402776], { icon: triangleIcon }).addTo(map)
+    L.marker([61.45447766239526, -149.36818757402776], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Alaska</b><br><img src="photos/alaska1.JPG" class="popup-img"><br>Anchorage area`);
 
     // Antarctica
-    L.marker([-77.84238666818321, 166.6709738619791], { icon: triangleIcon }).addTo(map)
+    L.marker([-77.84238666818321, 166.6709738619791], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Antarctica</b><br><img src="photos/mcmurdo1.JPG" class="popup-img"><br>McMurdo`);
-    L.marker([-77.84345474348973, 166.7814336681775], { icon: triangleIcon }).addTo(map)
+    L.marker([-77.84345474348973, 166.7814336681775], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Antarctica</b><br><img src="photos/antarctica1.JPG" class="popup-img"><br>Ross Ice Shelf`);
-    L.marker([-90, 0.0], { icon: triangleIcon }).addTo(map)
+    L.marker([-90, 0.0], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Antarctica</b><br><img src="photos/southpole1.JPG" class="popup-img"><br>South Pole`);
 
     // Iceland
-    L.marker([63.87929082426407, -22.445294501880408], { icon: triangleIcon }).addTo(map)
+    L.marker([63.87929082426407, -22.445294501880408], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Iceland</b><br><img src="photos/iceland1.JPG" class="popup-img"><br>Blue Lagoon`);
 
     // Italy
-    L.marker([41.889523300981125, 12.491522794092056], { icon: triangleIcon }).addTo(map)
+    L.marker([41.889523300981125, 12.491522794092056], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Italy</b><br><img src="photos/rome1.JPG" class="popup-img"><br>Rome`);    
-    L.marker([43.722773637437534, 10.394783824061053], { icon: triangleIcon }).addTo(map)
+    L.marker([43.722773637437534, 10.394783824061053], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Italy</b><br><img src="photos/pisa1.JPG" class="popup-img"><br>Pisa`);
-    L.marker([40.74857261951603, 14.48413938233574], { icon: triangleIcon }).addTo(map)
+    L.marker([40.74857261951603, 14.48413938233574], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Italy</b><br><img src="photos/pompei1.JPG" class="popup-img"><br>Pompei`);
 
     // Texas
-    L.marker([29.505248067576897, -100.02638609576937], { icon: triangleIcon }).addTo(map)
+    L.marker([29.505248067576897, -100.02638609576937], { icon: circleIcon }).addTo(map)
       .bindPopup(`<b>Texas</b><br><img src="photos/brokeoak1.JPG" class="popup-img"><br>BrokeOak Ranch`);
 
 </script>
