@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travel Map Test</title>
+<title>Travel Map</title>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -14,24 +14,22 @@
         margin: 0;
     }
 
-    /* Full-screen map */
     #map {
         width: 100%;
         height: 100%;
     }
 
-    /* Pop-up images */
     .popup-img {
         width: 180px;
         border-radius: 6px;
         margin-top: 6px;
+        cursor: pointer;
     }
 
-    /* Small clean circle marker */
     .circle-marker {
         width: 8px;
         height: 8px;
-        background-color: #00aaff; /* marker color */
+        background-color: #00aaff;
         border-radius: 50%;
     }
 </style>
@@ -48,10 +46,12 @@
     // Create the map
     var map = L.map('map').setView([20, 0], 2);
 
-    // Add OpenStreetMap tiles
+    // Add OpenStreetMap tiles (single world view)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '© OpenStreetMap'
+        attribution: '© OpenStreetMap',
+        noWrap: true,                // prevents repeating the world
+        bounds: [[-90, -180], [90, 180]] // defines visible area
     }).addTo(map);
 
     // Circle icon definition
@@ -68,40 +68,105 @@
 
     // Afghanistan
     L.marker([34.56924097766155, 69.21269647239585], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan1.JPG" class="popup-img"><br>Kabul airport`);
+      .bindPopup(`
+        <b>Afghanistan</b><br>
+        <a href="photos/afghan1.JPG" target="_blank">
+            <img src="photos/afghan1.JPG" class="popup-img">
+        </a><br>Kabul airport
+      `);
+
     L.marker([36.687175152418114, 67.14808398937268], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan2.JPG" class="popup-img"><br>Masar-i-Sharif area`);
+      .bindPopup(`
+        <b>Afghanistan</b><br>
+        <a href="photos/afghan2.JPG" target="_blank">
+            <img src="photos/afghan2.JPG" class="popup-img">
+        </a><br>Masar-i-Sharif area
+      `);
+
     L.marker([31.536520320085124, 65.89502725585834], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan3.JPG" class="popup-img"><br>Kandahar area`);
+      .bindPopup(`
+        <b>Afghanistan</b><br>
+        <a href="photos/afghan3.JPG" target="_blank">
+            <img src="photos/afghan3.JPG" class="popup-img">
+        </a><br>Kandahar area
+      `);
 
     // Alaska
     L.marker([61.45447766239526, -149.36818757402776], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Alaska</b><br><img src="photos/alaska1.JPG" class="popup-img"><br>Anchorage area`);
+      .bindPopup(`
+        <b>Alaska</b><br>
+        <a href="photos/alaska1.JPG" target="_blank">
+            <img src="photos/alaska1.JPG" class="popup-img">
+        </a><br>Anchorage area
+      `);
 
     // Antarctica
     L.marker([-77.84238666818321, 166.6709738619791], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Antarctica</b><br><img src="photos/mcmurdo1.JPG" class="popup-img"><br>McMurdo`);
+      .bindPopup(`
+        <b>Antarctica</b><br>
+        <a href="photos/mcmurdo1.JPG" target="_blank">
+            <img src="photos/mcmurdo1.JPG" class="popup-img">
+        </a><br>McMurdo
+      `);
+
     L.marker([-77.84345474348973, 166.7814336681775], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Antarctica</b><br><img src="photos/antarctica1.JPG" class="popup-img"><br>Ross Ice Shelf`);
+      .bindPopup(`
+        <b>Antarctica</b><br>
+        <a href="photos/antarctica1.JPG" target="_blank">
+            <img src="photos/antarctica1.JPG" class="popup-img">
+        </a><br>Ross Ice Shelf
+      `);
+
     L.marker([-90, 0.0], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Antarctica</b><br><img src="photos/southpole1.JPG" class="popup-img"><br>South Pole`);
+      .bindPopup(`
+        <b>Antarctica</b><br>
+        <a href="photos/southpole1.JPG" target="_blank">
+            <img src="photos/southpole1.JPG" class="popup-img">
+        </a><br>South Pole
+      `);
 
     // Iceland
     L.marker([63.87929082426407, -22.445294501880408], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Iceland</b><br><img src="photos/iceland1.JPG" class="popup-img"><br>Blue Lagoon`);
+      .bindPopup(`
+        <b>Iceland</b><br>
+        <a href="photos/iceland1.JPG" target="_blank">
+            <img src="photos/iceland1.JPG" class="popup-img">
+        </a><br>Blue Lagoon
+      `);
 
     // Italy
     L.marker([41.889523300981125, 12.491522794092056], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Italy</b><br><img src="photos/rome1.JPG" class="popup-img"><br>Rome`);    
+      .bindPopup(`
+        <b>Italy</b><br>
+        <a href="photos/rome1.JPG" target="_blank">
+            <img src="photos/rome1.JPG" class="popup-img">
+        </a><br>Rome
+      `);
+
     L.marker([43.722773637437534, 10.394783824061053], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Italy</b><br><img src="photos/pisa1.JPG" class="popup-img"><br>Pisa`);
+      .bindPopup(`
+        <b>Italy</b><br>
+        <a href="photos/pisa1.JPG" target="_blank">
+            <img src="photos/pisa1.JPG" class="popup-img">
+        </a><br>Pisa
+      `);
+
     L.marker([40.74857261951603, 14.48413938233574], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Italy</b><br><img src="photos/pompei1.JPG" class="popup-img"><br>Pompei`);
+      .bindPopup(`
+        <b>Italy</b><br>
+        <a href="photos/pompei1.JPG" target="_blank">
+            <img src="photos/pompei1.JPG" class="popup-img">
+        </a><br>Pompei
+      `);
 
     // Texas
     L.marker([29.505248067576897, -100.02638609576937], { icon: circleIcon }).addTo(map)
-      .bindPopup(`<b>Texas</b><br><img src="photos/brokeoak1.JPG" class="popup-img"><br>BrokeOak Ranch`);
-
+      .bindPopup(`
+        <b>Texas</b><br>
+        <a href="photos/brokeoak1.JPG" target="_blank">
+            <img src="photos/brokeoak1.JPG" class="popup-img">
+        </a><br>BrokeOak Ranch
+      `);
 </script>
 
 </body>
