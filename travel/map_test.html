@@ -27,17 +27,13 @@
         margin-top: 6px;
     }
 
-    /* Glowing diamond marker */
-    .diamond-marker {
-        width: 14px;
-        height: 14px;
-        background: #00aaff;                 /* diamond color */
-        transform: rotate(45deg);            /* square → diamond */
-        border-radius: 2px;                  /* soften corners */
-        box-shadow:
-            0 0 6px #00aaff,                 /* inner glow */
-            0 0 12px #00aaff,                /* outer glow */
-            0 0 18px rgba(0,170,255,0.7);    /* halo */
+    /* Crisp triangle marker */
+    .triangle-marker {
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-bottom: 12px solid #00aaff; /* triangle color */
     }
 </style>
 </head>
@@ -59,29 +55,29 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Diamond icon definition
-    const diamondIcon = L.divIcon({
-        className: 'diamond-marker',
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
-        popupAnchor: [0, -10]
+    // Triangle icon definition
+    const triangleIcon = L.divIcon({
+        className: 'triangle-marker',
+        iconSize: [14, 12],
+        iconAnchor: [7, 12],   // tip of the triangle
+        popupAnchor: [0, -12]
     });
 
     // -----------------------------
-    // TEST MARKERS
+    // MARKERS
     // -----------------------------
 
     // Afghanistan
     L.marker([34.56924097766155, 69.21269647239585], { icon: diamondIcon }).addTo(map)
-      .bindPopup(`<b>Kabul</b><br><img src="photos/afghan1.JPG" class="popup-img"><br>Kabul`);
+      .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan1.JPG" class="popup-img"><br>Kabul airport`);
     L.marker([36.687175152418114, 67.14808398937268], { icon: diamondIcon }).addTo(map)
-      .bindPopup(`<b>Masar-i-Sharif</b><br><img src="photos/afghan2.JPG" class="popup-img"><br>Masar-i-Sharif`);
+      .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan2.JPG" class="popup-img"><br>Masar-i-Sharif area`);
     L.marker([31.536520320085124, 65.89502725585834], { icon: diamondIcon }).addTo(map)
-      .bindPopup(`<b>Kandahar</b><br><img src="photos/afghan3.JPG" class="popup-img"><br>Kandahar`);
+      .bindPopup(`<b>Afghanistan</b><br><img src="photos/afghan3.JPG" class="popup-img"><br>Kandahar area`);
 
     // Alaska
     L.marker([61.45447766239526, -149.36818757402776], { icon: diamondIcon }).addTo(map)
-      .bindPopup(`<b>Alaska</b><br><img src="photos/alaska1.JPG" class="popup-img"><br>Alaska`);
+      .bindPopup(`<b>Alaska</b><br><img src="photos/alaska1.JPG" class="popup-img"><br>Anchorage area`);
 
     // Antarctica
     L.marker([-77.84238666818321, 166.6709738619791], { icon: diamondIcon }).addTo(map)
@@ -93,7 +89,7 @@
 
     // Iceland
     L.marker([63.87929082426407, -22.445294501880408], { icon: diamondIcon }).addTo(map)
-      .bindPopup(`<b>Iceland</b><br><img src="photos/iceland1.JPG" class="popup-img"><br>Iceland`);
+      .bindPopup(`<b>Iceland</b><br><img src="photos/iceland1.JPG" class="popup-img"><br>Blue Lagoon`);
 
     // Italy
     L.marker([41.889523300981125, 12.491522794092056], { icon: diamondIcon }).addTo(map)
@@ -101,7 +97,7 @@
     L.marker([43.722773637437534, 10.394783824061053], { icon: diamondIcon }).addTo(map)
       .bindPopup(`<b>Italy</b><br><img src="photos/pisa1.JPG" class="popup-img"><br>Pisa`);
     L.marker([40.74857261951603, 14.48413938233574], { icon: diamondIcon }).addTo(map)
-      .bindPopup(`<b>Pompei</b><br><img src="photos/pompei1.JPG" class="popup-img"><br>Pompei`);
+      .bindPopup(`<b>Italy</b><br><img src="photos/pompei1.JPG" class="popup-img"><br>Pompei`);
     
     // Texas
     L.marker([29.505248067576897, -100.02638609576937], { icon: diamondIcon }).addTo(map)
