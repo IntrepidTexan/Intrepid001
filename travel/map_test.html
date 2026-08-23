@@ -20,18 +20,30 @@
         height: 100%;
     }
 
-    /* Optional: make pop-up images look nice */
+    /* Pop-up images */
     .popup-img {
         width: 180px;
         border-radius: 6px;
         margin-top: 6px;
+    }
+
+    /* Glowing diamond marker */
+    .diamond-marker {
+        width: 14px;
+        height: 14px;
+        background: #00aaff;                 /* diamond color */
+        transform: rotate(45deg);            /* square → diamond */
+        border-radius: 2px;                  /* soften corners */
+        box-shadow:
+            0 0 6px #00aaff,                 /* inner glow */
+            0 0 12px #00aaff,                /* outer glow */
+            0 0 18px rgba(0,170,255,0.7);    /* halo */
     }
 </style>
 </head>
 
 <body>
 
-<!-- Map container -->
 <div id="map"></div>
 
 <!-- Leaflet JS -->
@@ -39,7 +51,7 @@
 
 <script>
     // Create the map
-    var map = L.map('map').setView([20, 0], 2); // world view
+    var map = L.map('map').setView([20, 0], 2);
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -47,35 +59,55 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
+    // Diamond icon definition
+    const diamondIcon = L.divIcon({
+        className: 'diamond-marker',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+        popupAnchor: [0, -10]
+    });
+
     // -----------------------------
-    // TEST PINS (you can delete later)
+    // TEST MARKERS
     // -----------------------------
 
-    // IceLand
-    L.marker([63.87929082426407, -22.445294501880408]).addTo(map)
-      .bindPopup(`
-        <b>IceLand</b><br>
-        <img src="photos/iceland/iceland2.jpg" class="popup-img"><br>
-        Placeholder photo from IceLand.
-      `);
+    // Afghanistan
+    L.marker([34.56924097766155, 69.21269647239585], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Kabul</b><br><img src="photos/afghan1.JPG" class="popup-img"><br>Kabul`);
+    L.marker([36.687175152418114, 67.14808398937268], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Masar-i-Sharif</b><br><img src="photos/afghan2.JPG" class="popup-img"><br>Masar-i-Sharif`);
+    L.marker([31.536520320085124, 65.89502725585834], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Kandahar</b><br><img src="photos/afghan3.JPG" class="popup-img"><br>Kandahar`);
 
     // Alaska
-    L.marker([61.45447766239526, -149.36818757402776]).addTo(map)
-      .bindPopup(`
-        <b>Alaska</b><br>
-        <img src="photos/alaska/alaska1.jpg" class="popup-img"><br>
-        Placeholder photo from Alaska.
-      `);
+    L.marker([61.45447766239526, -149.36818757402776], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Alaska</b><br><img src="photos/alaska1.JPG" class="popup-img"><br>Alaska`);
 
+    // Antarctica
+    L.marker([-77.84238666818321, 166.6709738619791], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Antarctica</b><br><img src="photos/mcmurdo1.JPG" class="popup-img"><br>McMurdo`);
+    L.marker([-77.84345474348973, 166.7814336681775], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Antarctica</b><br><img src="photos/antarctica1.JPG" class="popup-img"><br>Ross Ice Shelf`);
+    L.marker([-90, 0.0], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Antarctica</b><br><img src="photos/southpole1.JPG" class="popup-img"><br>South Pole`);
+
+    // Iceland
+    L.marker([63.87929082426407, -22.445294501880408], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Iceland</b><br><img src="photos/iceland1.JPG" class="popup-img"><br>Iceland`);
+
+    // Italy
+    L.marker([41.889523300981125, 12.491522794092056], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Italy</b><br><img src="photos/rome1.JPG" class="popup-img"><br>Rome`);    
+    L.marker([43.722773637437534, 10.394783824061053], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Italy</b><br><img src="photos/pisa1.JPG" class="popup-img"><br>Pisa`);
+    L.marker([40.74857261951603, 14.48413938233574], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Pompei</b><br><img src="photos/pompei1.JPG" class="popup-img"><br>Pompei`);
+    
     // Texas
-    L.marker([29.505248067576897, -100.02638609576937]).addTo(map)
-      .bindPopup(`
-        <b>Texas</b><br>
-        <img src="photos/texas/texas1.jpg" class="popup-img"><br>
-        Placeholder photo from Texas.
-      `);
+    L.marker([29.505248067576897, -100.02638609576937], { icon: diamondIcon }).addTo(map)
+      .bindPopup(`<b>Texas</b><br><img src="photos/brokeoak1.JPG" class="popup-img"><br>BrokeOak Ranch`);
+
 </script>
 
 </body>
 </html>
-
