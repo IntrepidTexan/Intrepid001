@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Map</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    .popup-img {
+        width: 180px;
+        border-radius: 6px;
+        margin-top: 6px;
+        cursor: pointer;
+    }
+
+    .circle-marker {
+        width: 8px;
+        height: 8px;
+        background-color: #00aaff;
+        border-radius: 50%;
+    }
+
+    /* Full-screen photo overlay */
+    #photo-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        flex-direction: column;
+        touch-action: none;
+    }
+
+    #photo-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+    }
+
+    /* Back arrow */
+    #back-arrow {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+    }
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<!-- Full-screen photo viewer -->
+<div id="photo-overlay">
+    <div id="back-arrow" onclick="closePhoto()">←</div>
+    <img id="overlay-img" src="">
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    function showPhoto(src) {
+        document.getElementById('overlay-img').src = src;
+        document.getElementById('photo-overlay').style.display = 'flex';
+    }
+
+    function closePhoto() {
+        document.getElementById('photo-overlay').style.display = 'none';
+    }
+
+    // Swipe-to-close
+    let startX = 0;
+    let startY = 0;
+
+    const overlay = document.getElementById('photo-overlay');
+
+    overlay.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    });
+
+    overlay.addEventListener('touchend', function(e) {
+        let endX = e.changedTouches[0].clientX;
+        let endY = e.changedTouches[0].clientY;
+
+        let diffX = Math.abs(endX - startX);
+        let diffY = Math.abs(endY - startY);
+
+        if (diffX > 50 || diffY > 50) {
+            closePhoto();
+        }
+    });
+
+    var map = L.map('map').setView([20, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap',
+        noWrap: true,
+        bounds: [[-90, -180], [90, 180]]
+    }).addTo(map);
+
+    const circleIcon = L.divIcon({
+        className: 'circle-marker',
+        iconSize: [8, 8],
+        iconAnchor: [4, 4],
+        popupAnchor: [0, -6]
+    });
+
+    // Afghanistan
+    L.marker([34.56924097766155, 69.21269647239585], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Afghanistan</b><br>
+        <img src="photos/afghan1.JPG" class="popup-img" onclick="showPhoto('photos/afghan1.JPG')">
+        <br>Kabul airport
+      `);
+
+    L.marker([36.687175152418114, 67.14808398937268], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Afghanistan</b><br>
+        <img src="photos/afghan2.JPG" class="popup-img" onclick="showPhoto('photos/afghan2.JPG')">
+        <br>Masar-i-Sharif area
+      `);
+
+    L.marker([31.536520320085124, 65.89502725585834], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Afghanistan</b><br>
+        <img src="photos/afghan3.JPG" class="popup-img" onclick="showPhoto('photos/afghan3.JPG')">
+        <br>Kandahar area
+      `);
+
+    // Alaska
+    L.marker([61.45447766239526, -149.36818757402776], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Alaska</b><br>
+        <img src="photos/alaska1.JPG" class="popup-img" onclick="showPhoto('photos/alaska1.JPG')">
+        <br>Anchorage area
+      `);
+
+    // Antarctica
+    L.marker([-77.84238666818321, 166.6709738619791], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Antarctica</b><br>
+        <img src="photos/mcmurdo1.JPG" class="popup-img" onclick="showPhoto('photos/mcmurdo1.JPG')">
+        <br>McMurdo
+      `);
+
+    L.marker([-77.84345474348973, 166.7814336681775], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Antarctica</b><br>
+        <img src="photos/antarctica1.JPG" class="popup-img" onclick="showPhoto('photos/antarctica1.JPG')">
+        <br>Ross Ice Shelf
+      `);
+
+    L.marker([-90, 0.0], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Antarctica</b><br>
+        <img src="photos/southpole1.JPG" class="popup-img" onclick="showPhoto('photos/southpole1.JPG')">
+        <br>South Pole
+      `);
+
+    // Argentina
+    L.marker([-25.691611608178366, -54.43818865673707], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Iguazu Falls, Argentina</b><br>
+        <img src="photos/IguazuFalls.JPG" class="popup-img" onclick="showPhoto('photos/IguazuFalls.JPG')">
+        <br>Iguazu Falls
+      `);
+
+    L.marker([-49.29901194352328, -72.9200200991868], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Patagonia, Argentina</b><br>
+        <img src="photos/Patagonia1.JPG" class="popup-img" onclick="showPhoto('photos/Patagonia1.JPG')">
+        <br>Mirador del Fitz Roy
+      `);
+
+    L.marker([-50.46768613202876, -73.0304056424141], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Patagonia, Argentina</b><br>
+        <img src="photos/Patagonia2.JPG" class="popup-img" onclick="showPhoto('photos/Patagonia2.JPG')">
+        <br>Parito Mareno Glacier
+      `);
+
+    // Australia
+    L.marker([-33.859261199569126, 151.21546835833118], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Sydney, Australia</b><br>
+        <img src="photos/Sydney.JPG" class="popup-img" onclick="showPhoto('photos/Sydney.JPG')">
+        <br>Opera House
+      `);
+
+    // China
+    L.marker([39.90837452151188, 116.39753354136697], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Beijing, China</b><br>
+        <img src="photos/TiananmenGateBeijing.JPG" class="popup-img" onclick="showPhoto('photos/TiananmenGateBeijing.JPG')">
+        <br>Tiananmen Gate
+      `);
+
+    L.marker(34.38409756465705, 109.27850252580973], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Xi'an, China</b><br>
+        <img src="photos/TerracottaXianChina.JPG" class="popup-img" onclick="showPhoto('photos/TerracottaXianChina.JPG')">
+        <br>Terracotta Soldiers
+      `);
+
+   // Iceland
+    L.marker([63.87929082426407, -22.445294501880408], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Iceland</b><br>
+        <img src="photos/iceland1.JPG" class="popup-img" onclick="showPhoto('photos/iceland1.JPG')">
+        <br>Blue Lagoon
+      `);
+
+    // Italy
+    L.marker([41.889523300981125, 12.491522794092056], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Italy</b><br>
+        <img src="photos/rome1.JPG" class="popup-img" onclick="showPhoto('photos/rome1.JPG')">
+        <br>Rome
+      `);
+
+    L.marker([43.722773637437534, 10.394783824061053], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Italy</b><br>
+        <img src="photos/pisa1.JPG" class="popup-img" onclick="showPhoto('photos/pisa1.JPG')">
+        <br>Pisa
+      `);
+
+    L.marker([40.74857261951603, 14.48413938233574], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Italy</b><br>
+        <img src="photos/pompei1.JPG" class="popup-img" onclick="showPhoto('photos/pompei1.JPG')">
+        <br>Pompei
+      `);
+
+    L.marker([44.40703304834352, 8.934043745765429], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Italy</b><br>
+        <img src="photos/GenoaIT.JPG" class="popup-img" onclick="showPhoto('photos/GenoaIT.JPG')">
+        <br>Genoa
+      `);
+
+    L.marker([45.467394546780504, 9.189561926263542], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Italy</b><br>
+        <img src="photos/MilanIT.JPG" class="popup-img" onclick="showPhoto('photos/MilanIT.JPG')">
+        <br>Milan
+      `);
+
+    // New Zealand
+    L.marker([-43.72050440717476, 170.0647827267097], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>New Zealand</b><br>
+        <img src="photos/MuellerHutNZ.JPG" class="popup-img" onclick="showPhoto('photos/MuellerHutNZ.JPG')">
+        <br>Mueller Hut
+      `);
+
+    // Texas
+    L.marker([29.505248067576897, -100.02638609576937], { icon: circleIcon }).addTo(map)
+      .bindPopup(`
+        <b>Texas</b><br>
+        <img src="photos/brokeoak1.JPG" class="popup-img" onclick="showPhoto('photos/brokeoak1.JPG')">
+        <br>BrokeOak Ranch
+      `);
+</script>
+
+</body>
+</html>
