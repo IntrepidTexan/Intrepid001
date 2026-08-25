@@ -1,4 +1,4 @@
-<!-- /travel/index.html -->
+<!-- /IT02/index.html -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,10 +8,11 @@
 
   <title>Intrepid Texan Travel Map — BETA</title>
 
-  <meta http-equiv="refresh" content="0; url=map_test.html">
+  <!-- Redirect directly to the travel map -->
+  <meta http-equiv="refresh" content="0; url=/travel/map_test.html">
 
   <script>
-    window.location.replace("map_test.html");
+    window.location.replace("/travel/map_test.html");
   </script>
 
   <style>
@@ -55,7 +56,7 @@
   </p>
 
   <p>
-    <a href="map_test.html">
+    <a href="/travel/map_test.html">
       Click here if the map does not open automatically.
     </a>
   </p>
@@ -194,16 +195,61 @@
       <div class="video-title">BOSTON & ACADIA NP</div>
     </div>
 
+    <div class="coming-soon">
+      <img class="thumb"
+           src="https://placehold.co/320x180?text=COMING+SOON"
+           alt="GREECE & TURKEY">
+      <div class="video-title">GREECE & TURKEY</div>
+    </div>
+
+    <div class="coming-soon">
+      <img class="thumb"
+           src="https://placehold.co/320x180?text=COMING+SOON"
+           alt="LOC20">
+      <div class="video-title">LOC20</div>
+    </div>
+
+    <div class="coming-soon">
+      <img class="thumb"
+           src="https://placehold.co/320x180?text=COMING+SOON"
+           alt="LOC21">
+      <div class="video-title">LOC21</div>
+    </div>
+
+    <div class="coming-soon">
+      <img class="thumb"
+           src="https://placehold.co/320x180?text=COMING+SOON"
+           alt="LOC22">
+      <div class="video-title">LOC22</div>
+    </div>
+
+    <div class="coming-soon">
+      <img class="thumb"
+           src="https://placehold.co/320x180?text=COMING+SOON"
+           alt="LOC23">
+      <div class="video-title">LOC23</div>
+    </div>
+
+    <div class="coming-soon">
+      <img class="thumb"
+           src="https://placehold.co/320x180?text=COMING+SOON"
+           alt="LOC24">
+      <div class="video-title">LOC24</div>
+    </div>
+
   </div>
 
   <div id="videoModal" class="modal" onclick="closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <span class="close-btn" onclick="closeModal()">&times;</span>
-      <iframe id="modalVideo"
-              src=""
-              allow="autoplay; encrypted-media"
-              allowfullscreen>
+
+      <iframe
+        id="modalVideo"
+        src=""
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
       </iframe>
+
     </div>
   </div>
 
