@@ -74,7 +74,6 @@
         cursor: grabbing;
     }
 
-    /* Back arrow */
     #back-arrow {
         position: absolute;
         top: 20px;
@@ -88,7 +87,6 @@
         padding: 8px;
     }
 
-    /* Small zoom indicator */
     #zoom-indicator {
         position: absolute;
         top: 25px;
@@ -103,7 +101,6 @@
         user-select: none;
         pointer-events: none;
     }
-
 </style>
 </head>
 
@@ -111,20 +108,11 @@
 
 <div id="map"></div>
 
-<!-- ============================================================
-     FULL-SCREEN PHOTO VIEWER
-     ============================================================ -->
-
 <div id="photo-overlay">
-
     <div id="back-arrow" onclick="closePhoto()">←</div>
-
     <div id="zoom-indicator">1.0×</div>
-
     <img id="overlay-img" src="" alt="Travel photo">
-
 </div>
-
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -150,7 +138,6 @@
     }
 
     function updatePhotoTransform() {
-
         overlayImg.style.transform =
             `translate(${translateX}px, ${translateY}px) scale(${scale})`;
 
@@ -171,39 +158,24 @@
     }
 
     function showPhoto(src) {
-
         resetPhotoZoom();
-
         overlayImg.src = src;
-
         overlay.style.display = 'flex';
     }
 
     function closePhoto() {
-
         overlay.style.display = 'none';
-
         overlayImg.src = '';
-
         resetPhotoZoom();
     }
 
-
-    /* ============================================================
-       ESC KEY CLOSES PHOTO
-       ============================================================ */
-
     document.addEventListener('keydown', function(e) {
-
         if (e.key === 'Escape' && overlay.style.display === 'flex') {
             closePhoto();
         }
-
     });
 
-
     /* ============================================================
-       LAPTOP / DESKTOP:
        MOUSE WHEEL ZOOM
        ============================================================ */
 
@@ -234,10 +206,8 @@
 
     }, { passive: false });
 
-
     /* ============================================================
-       LAPTOP / DESKTOP:
-       CLICK-AND-DRAG WHEN ZOOMED
+       CLICK AND DRAG WHEN ZOOMED
        ============================================================ */
 
     let mouseDragging = false;
@@ -287,28 +257,17 @@
     });
 
     window.addEventListener('mouseup', function() {
-
         mouseDragging = false;
-
         overlay.classList.remove('dragging');
     });
 
-
-    /* ============================================================
-       DOUBLE-CLICK RESETS ZOOM
-       ============================================================ */
-
     overlayImg.addEventListener('dblclick', function(e) {
-
         e.preventDefault();
-
         resetPhotoZoom();
     });
 
-
     /* ============================================================
-       PHONE / TABLET:
-       PINCH ZOOM + DRAG + SWIPE CLOSE
+       PHONE / TABLET PINCH ZOOM
        ============================================================ */
 
     let touchMode = '';
@@ -322,15 +281,12 @@
     let pinchStartDistance = 0;
     let pinchStartScale = 1;
 
-
     function touchDistance(touch1, touch2) {
-
         const dx = touch2.clientX - touch1.clientX;
         const dy = touch2.clientY - touch1.clientY;
 
         return Math.sqrt(dx * dx + dy * dy);
     }
-
 
     overlay.addEventListener('touchstart', function(e) {
 
@@ -345,7 +301,6 @@
 
             return;
         }
-
 
         if (e.touches.length === 1) {
 
@@ -367,13 +322,9 @@
 
     }, { passive: false });
 
-
     overlay.addEventListener('touchmove', function(e) {
 
         e.preventDefault();
-
-
-        /* PINCH ZOOM */
 
         if (
             touchMode === 'pinch' &&
@@ -394,7 +345,6 @@
                 );
 
             if (scale <= 1.01) {
-
                 scale = 1;
                 translateX = 0;
                 translateY = 0;
@@ -404,9 +354,6 @@
 
             return;
         }
-
-
-        /* ONE-FINGER PAN */
 
         if (
             touchMode === 'pan' &&
@@ -426,10 +373,7 @@
 
     }, { passive: false });
 
-
     overlay.addEventListener('touchend', function(e) {
-
-        /* SWIPE TO CLOSE ONLY AT NORMAL SIZE */
 
         if (
             touchMode === 'swipe' &&
@@ -451,16 +395,11 @@
             }
         }
 
-
-        /* IF ONE FINGER REMAINS AFTER PINCH,
-           DO NOT ACCIDENTALLY START A SWIPE */
-
         if (e.touches.length === 0) {
             touchMode = '';
         }
 
     }, { passive: false });
-
 
     /* ============================================================
        MAP
@@ -478,7 +417,6 @@
         }
     ).addTo(map);
 
-
     const circleIcon = L.divIcon({
         className: 'circle-marker',
         iconSize: [8, 8],
@@ -494,54 +432,42 @@
     L.marker([34.56924, 69.21270], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <img src="photos/afghan1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/afghan1.JPG')">
+        <img src="photos/afghan1.JPG" class="popup-img" onclick="showPhoto('photos/afghan1.JPG')">
         <br>Kabul airport
       `);
 
     L.marker([36.68718, 67.14808], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <img src="photos/afghan2.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/afghan2.JPG')">
+        <img src="photos/afghan2.JPG" class="popup-img" onclick="showPhoto('photos/afghan2.JPG')">
         <br>Masar-i-Sharif area
       `);
 
     L.marker([31.53652, 65.89503], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <img src="photos/afghan3.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/afghan3.JPG')">
+        <img src="photos/afghan3.JPG" class="popup-img" onclick="showPhoto('photos/afghan3.JPG')">
         <br>Kandahar area
       `);
 
     L.marker([33.59750, 69.23250], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <img src="photos/gardez1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/gardez1.JPG')">
+        <img src="photos/gardez1.JPG" class="popup-img" onclick="showPhoto('photos/gardez1.JPG')">
         <br>Former Soviet observation/artillery post overlooking Gardez
       `);
 
     L.marker([36.70690, 67.20970], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <img src="photos/Mazar1Sharif2.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Mazar1Sharif2.JPG')">
+        <img src="photos/Mazar1Sharif2.JPG" class="popup-img" onclick="showPhoto('photos/Mazar1Sharif2.JPG')">
         <br>Mazar-i-Sharif Airport
       `);
 
     L.marker([36.70920, 67.11010], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Afghanistan</b><br>
-        <img src="photos/Mazar1Sharif2b.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Mazar1Sharif2b.JPG')">
+        <img src="photos/Mazar1Sharif2b.JPG" class="popup-img" onclick="showPhoto('photos/Mazar1Sharif2b.JPG')">
         <br>Mazar-i-Sharif city center (approx.)
       `);
 
@@ -553,27 +479,21 @@
     L.marker([-77.84239, 166.67097], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Antarctica</b><br>
-        <img src="photos/mcmurdo1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/mcmurdo1.JPG')">
+        <img src="photos/mcmurdo1.JPG" class="popup-img" onclick="showPhoto('photos/mcmurdo1.JPG')">
         <br>McMurdo
       `);
 
     L.marker([-77.84345, 166.78143], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Antarctica</b><br>
-        <img src="photos/antarctica1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/antarctica1.JPG')">
+        <img src="photos/antarctica1.JPG" class="popup-img" onclick="showPhoto('photos/antarctica1.JPG')">
         <br>Ross Ice Shelf
       `);
 
     L.marker([-90.00000, 0.00000], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Antarctica</b><br>
-        <img src="photos/southpole1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/southpole1.JPG')">
+        <img src="photos/southpole1.JPG" class="popup-img" onclick="showPhoto('photos/southpole1.JPG')">
         <br>South Pole
       `);
 
@@ -585,27 +505,21 @@
     L.marker([-25.69161, -54.43819], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Argentina</b><br>
-        <img src="photos/IguazuFalls.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/IguazuFalls.JPG')">
+        <img src="photos/IguazuFalls.JPG" class="popup-img" onclick="showPhoto('photos/IguazuFalls.JPG')">
         <br>Iguazu Falls
       `);
 
     L.marker([-49.29901, -72.92002], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Argentina</b><br>
-        <img src="photos/Patagonia1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Patagonia1.JPG')">
+        <img src="photos/Patagonia1.JPG" class="popup-img" onclick="showPhoto('photos/Patagonia1.JPG')">
         <br>Mirador del Fitz Roy
       `);
 
     L.marker([-50.46769, -73.03041], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Argentina</b><br>
-        <img src="photos/Patagonia2.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Patagonia2.JPG')">
+        <img src="photos/Patagonia2.JPG" class="popup-img" onclick="showPhoto('photos/Patagonia2.JPG')">
         <br>Perito Moreno Glacier
       `);
 
@@ -617,9 +531,7 @@
     L.marker([-33.85926, 151.21547], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Sydney, Australia</b><br>
-        <img src="photos/Sydney.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Sydney.JPG')">
+        <img src="photos/Sydney.JPG" class="popup-img" onclick="showPhoto('photos/Sydney.JPG')">
         <br>Opera House
       `);
 
@@ -631,27 +543,21 @@
     L.marker([47.53300, 14.06600], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Austria</b><br>
-        <img src="photos/EnnsValley.Styria.Austria.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/EnnsValley.Styria.Austria.JPG')">
+        <img src="photos/EnnsValley.Styria.Austria.JPG" class="popup-img" onclick="showPhoto('photos/EnnsValley.Styria.Austria.JPG')">
         <br>Pürgg / Enns Valley, Styria (approx.)
       `);
 
     L.marker([47.79720, 13.04770], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Austria</b><br>
-        <img src="photos/Salzburg.AU.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Salzburg.AU.JPG')">
+        <img src="photos/Salzburg.AU.JPG" class="popup-img" onclick="showPhoto('photos/Salzburg.AU.JPG')">
         <br>Hohensalzburg Fortress, Salzburg
       `);
 
     L.marker([47.33300, 13.15400], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Austria</b><br>
-        <img src="photos/StVeit.AU.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/StVeit.AU.JPG')">
+        <img src="photos/StVeit.AU.JPG" class="popup-img" onclick="showPhoto('photos/StVeit.AU.JPG')">
         <br>St. Veit im Pongau area / ski viewpoint (approx.)
       `);
 
@@ -663,18 +569,14 @@
     L.marker([50.84670, 4.35250], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Belgium</b><br>
-        <img src="photos/Brussels.Belgium.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Brussels.Belgium.JPG')">
+        <img src="photos/Brussels.Belgium.JPG" class="popup-img" onclick="showPhoto('photos/Brussels.Belgium.JPG')">
         <br>Grand Place, Brussels
       `);
 
     L.marker([50.67860, 4.40550], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Belgium</b><br>
-        <img src="photos/WaterlooBattlefield.1815.Belgium.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/WaterlooBattlefield.1815.Belgium.JPG')">
+        <img src="photos/WaterlooBattlefield.1815.Belgium.JPG" class="popup-img" onclick="showPhoto('photos/WaterlooBattlefield.1815.Belgium.JPG')">
         <br>Lion's Mound, Waterloo Battlefield
       `);
 
@@ -686,27 +588,21 @@
     L.marker([39.90837, 116.39753], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Beijing, China</b><br>
-        <img src="photos/TiananmenGateBeijing.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/TiananmenGateBeijing.JPG')">
+        <img src="photos/TiananmenGateBeijing.JPG" class="popup-img" onclick="showPhoto('photos/TiananmenGateBeijing.JPG')">
         <br>Tiananmen Gate
       `);
 
     L.marker([34.38410, 109.27850], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Xi'an, China</b><br>
-        <img src="photos/TerracottaXianChina.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/TerracottaXianChina.JPG')">
+        <img src="photos/TerracottaXianChina.JPG" class="popup-img" onclick="showPhoto('photos/TerracottaXianChina.JPG')">
         <br>Terracotta Soldiers
       `);
 
     L.marker([40.43195, 116.57045], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Great Wall of China</b><br>
-        <img src="photos/GreatWallChina.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/GreatWallChina.JPG')">
+        <img src="photos/GreatWallChina.JPG" class="popup-img" onclick="showPhoto('photos/GreatWallChina.JPG')">
         <br>Great Wall hike
       `);
 
@@ -718,9 +614,7 @@
     L.marker([50.08750, 14.42130], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Czech Republic</b><br>
-        <img src="photos/Prague.CzechRepublic.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Prague.CzechRepublic.JPG')">
+        <img src="photos/Prague.CzechRepublic.JPG" class="popup-img" onclick="showPhoto('photos/Prague.CzechRepublic.JPG')">
         <br>Old Town Square, Prague
       `);
 
@@ -732,9 +626,7 @@
     L.marker([55.67980, 12.59100], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Denmark</b><br>
-        <img src="photos/Copenhagen.Denmark.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Copenhagen.Denmark.JPG')">
+        <img src="photos/Copenhagen.Denmark.JPG" class="popup-img" onclick="showPhoto('photos/Copenhagen.Denmark.JPG')">
         <br>Nyhavn, Copenhagen
       `);
 
@@ -746,45 +638,35 @@
     L.marker([29.97530, 31.13760], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Egypt</b><br>
-        <img src="photos/GizaPlateau.Cairo.Egypt.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/GizaPlateau.Cairo.Egypt.JPG')">
+        <img src="photos/GizaPlateau.Cairo.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/GizaPlateau.Cairo.Egypt.JPG')">
         <br>Giza Plateau – Great Sphinx and Great Pyramid
       `);
 
     L.marker([25.73810, 32.60640], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Egypt</b><br>
-        <img src="photos/HatshepsutTemple.Luxor.Egypt.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/HatshepsutTemple.Luxor.Egypt.JPG')">
+        <img src="photos/HatshepsutTemple.Luxor.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/HatshepsutTemple.Luxor.Egypt.JPG')">
         <br>Temple of Hatshepsut, Luxor
       `);
 
     L.marker([24.02500, 32.88470], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Egypt</b><br>
-        <img src="photos/IsisPhilae.Agilia.Egypt.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/IsisPhilae.Agilia.Egypt.JPG')">
+        <img src="photos/IsisPhilae.Agilia.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/IsisPhilae.Agilia.Egypt.JPG')">
         <br>Temple of Isis, Philae / Agilkia Island
       `);
 
     L.marker([24.45250, 32.92800], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Egypt</b><br>
-        <img src="photos/KomOmbo.Aswan.Egypt.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/KomOmbo.Aswan.Egypt.JPG')">
+        <img src="photos/KomOmbo.Aswan.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/KomOmbo.Aswan.Egypt.JPG')">
         <br>Temple of Kom Ombo
       `);
 
     L.marker([25.69950, 32.63910], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Egypt</b><br>
-        <img src="photos/LuxorTemple.Luxor.Egypt.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/LuxorTemple.Luxor.Egypt.JPG')">
+        <img src="photos/LuxorTemple.Luxor.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/LuxorTemple.Luxor.Egypt.JPG')">
         <br>Luxor Temple
       `);
 
@@ -796,9 +678,7 @@
     L.marker([59.43720, 24.74280], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Estonia</b><br>
-        <img src="photos/Tallinn.Estonia.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Tallinn.Estonia.JPG')">
+        <img src="photos/Tallinn.Estonia.JPG" class="popup-img" onclick="showPhoto('photos/Tallinn.Estonia.JPG')">
         <br>Toompea viewpoint over Tallinn
       `);
 
@@ -810,54 +690,42 @@
     L.marker([49.20870, 5.42330], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>France</b><br>
-        <img src="photos/DouaumontOssuary130Kremains.Verdun.France.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/DouaumontOssuary130Kremains.Verdun.France.JPG')">
+        <img src="photos/DouaumontOssuary130Kremains.Verdun.France.JPG" class="popup-img" onclick="showPhoto('photos/DouaumontOssuary130Kremains.Verdun.France.JPG')">
         <br>Douaumont Ossuary, Verdun
       `);
 
     L.marker([49.21600, 5.43940], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>France</b><br>
-        <img src="photos/FortDouaumont.VerdunBattlefield1916.France.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/FortDouaumont.VerdunBattlefield1916.France.JPG')">
+        <img src="photos/FortDouaumont.VerdunBattlefield1916.France.JPG" class="popup-img" onclick="showPhoto('photos/FortDouaumont.VerdunBattlefield1916.France.JPG')">
         <br>Fort Douaumont, Verdun Battlefield
       `);
 
     L.marker([48.92110, 7.48180], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>France</b><br>
-        <img src="photos/LichtenbergVillage.Alsace.France.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/LichtenbergVillage.Alsace.France.JPG')">
+        <img src="photos/LichtenbergVillage.Alsace.France.JPG" class="popup-img" onclick="showPhoto('photos/LichtenbergVillage.Alsace.France.JPG')">
         <br>Château de Lichtenberg overlooking Lichtenberg, Alsace
       `);
 
     L.marker([48.85300, 2.34990], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>France</b><br>
-        <img src="photos/NotreDame.ParisFR.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/NotreDame.ParisFR.JPG')">
+        <img src="photos/NotreDame.ParisFR.JPG" class="popup-img" onclick="showPhoto('photos/NotreDame.ParisFR.JPG')">
         <br>Notre-Dame Cathedral, Paris
       `);
 
     L.marker([48.85540, 2.34500], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>France</b><br>
-        <img src="photos/StChappel.ParisFR.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/StChappel.ParisFR.JPG')">
+        <img src="photos/StChappel.ParisFR.JPG" class="popup-img" onclick="showPhoto('photos/StChappel.ParisFR.JPG')">
         <br>Sainte-Chapelle, Paris
       `);
 
     L.marker([48.58190, 7.75000], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>France</b><br>
-        <img src="photos/Strasburg.France.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Strasburg.France.JPG')">
+        <img src="photos/Strasburg.France.JPG" class="popup-img" onclick="showPhoto('photos/Strasburg.France.JPG')">
         <br>Strasbourg Cathedral
       `);
 
@@ -869,54 +737,42 @@
     L.marker([48.26900, 11.46810], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Germany</b><br>
-        <img src="photos/Dachau.GE.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Dachau.GE.JPG')">
+        <img src="photos/Dachau.GE.JPG" class="popup-img" onclick="showPhoto('photos/Dachau.GE.JPG')">
         <br>Dachau Concentration Camp Memorial Site
       `);
 
     L.marker([49.41060, 8.71530], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Germany</b><br>
-        <img src="photos/Heidelburg.GE.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Heidelburg.GE.JPG')">
+        <img src="photos/Heidelburg.GE.JPG" class="popup-img" onclick="showPhoto('photos/Heidelburg.GE.JPG')">
         <br>Heidelberg Castle
       `);
 
     L.marker([48.13740, 11.57550], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Germany</b><br>
-        <img src="photos/Munich.GE.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Munich.GE.JPG')">
+        <img src="photos/Munich.GE.JPG" class="popup-img" onclick="showPhoto('photos/Munich.GE.JPG')">
         <br>Marienplatz / New Town Hall, Munich
       `);
 
     L.marker([47.55760, 10.74980], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Germany</b><br>
-        <img src="photos/NeuschwansteinCastle.GE.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/NeuschwansteinCastle.GE.jpg')">
+        <img src="photos/NeuschwansteinCastle.GE.JPG" class="popup-img" onclick="showPhoto('photos/NeuschwansteinCastle.GE.JPG')">
         <br>Neuschwanstein Castle
       `);
 
     L.marker([47.59600, 11.06460], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Germany</b><br>
-        <img src="photos/Ogerammergau.GE.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Ogerammergau.GE.JPG')">
+        <img src="photos/Ogerammergau.GE.JPG" class="popup-img" onclick="showPhoto('photos/Ogerammergau.GE.JPG')">
         <br>Oberammergau village center
       `);
 
     L.marker([49.75970, 6.64400], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Germany</b><br>
-        <img src="photos/PortaNigra.Trier.Germany.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/PortaNigra.Trier.Germany.JPG')">
+        <img src="photos/PortaNigra.Trier.Germany.JPG" class="popup-img" onclick="showPhoto('photos/PortaNigra.Trier.Germany.JPG')">
         <br>Porta Nigra, Trier
       `);
 
@@ -928,9 +784,7 @@
     L.marker([36.14778, -5.35471], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Gibraltar</b><br>
-        <img src="photos/Gibraltar.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Gibraltar.JPG')">
+        <img src="photos/Gibraltar.JPG" class="popup-img" onclick="showPhoto('photos/Gibraltar.JPG')">
         <br>Sunborn Harbor
       `);
 
@@ -942,9 +796,7 @@
     L.marker([13.43994, 144.73020], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Guam</b><br>
-        <img src="photos/Guam.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Guam.JPG')">
+        <img src="photos/Guam.JPG" class="popup-img" onclick="showPhoto('photos/Guam.JPG')">
         <br>Guam
       `);
 
@@ -956,9 +808,7 @@
     L.marker([47.50200, 19.03480], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Hungary</b><br>
-        <img src="photos/Budapest.Danube.Hungary.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Budapest.Danube.Hungary.JPG')">
+        <img src="photos/Budapest.Danube.Hungary.JPG" class="popup-img" onclick="showPhoto('photos/Budapest.Danube.Hungary.JPG')">
         <br>Fisherman's Bastion view toward Parliament, Budapest
       `);
 
@@ -970,9 +820,7 @@
     L.marker([63.87929, -22.44529], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Iceland</b><br>
-        <img src="photos/iceland1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/iceland1.JPG')">
+        <img src="photos/iceland1.JPG" class="popup-img" onclick="showPhoto('photos/iceland1.JPG')">
         <br>Blue Lagoon
       `);
 
@@ -984,54 +832,42 @@
     L.marker([44.40703, 8.93404], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Genoa, Italy</b><br>
-        <img src="photos/GenoaIT.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/GenoaIT.JPG')">
+        <img src="photos/GenoaIT.JPG" class="popup-img" onclick="showPhoto('photos/GenoaIT.JPG')">
         <br>Central Fountain
       `);
 
     L.marker([45.46739, 9.18956], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Milan, Italy</b><br>
-        <img src="photos/MilanIT.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/MilanIT.JPG')">
+        <img src="photos/MilanIT.JPG" class="popup-img" onclick="showPhoto('photos/MilanIT.JPG')">
         <br>Opera House
       `);
 
     L.marker([43.72277, 10.39478], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Pisa, Italy</b><br>
-        <img src="photos/pisa1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/pisa1.JPG')">
+        <img src="photos/pisa1.JPG" class="popup-img" onclick="showPhoto('photos/pisa1.JPG')">
         <br>Leaning Tower of Pisa
       `);
 
     L.marker([40.74857, 14.48414], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Pompeii, Italy</b><br>
-        <img src="photos/pompeii1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/pompeii1.JPG')">
+        <img src="photos/pompeii1.JPG" class="popup-img" onclick="showPhoto('photos/pompeii1.JPG')">
         <br>Ruins of Pompeii
       `);
 
     L.marker([41.88952, 12.49152], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Rome, Italy</b><br>
-        <img src="photos/rome1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/rome1.JPG')">
+        <img src="photos/rome1.JPG" class="popup-img" onclick="showPhoto('photos/rome1.JPG')">
         <br>Coliseum
       `);
 
     L.marker([45.43400, 12.33970], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Italy</b><br>
-        <img src="photos/VeniceIT.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/VeniceIT.JPG')">
+        <img src="photos/VeniceIT.JPG" class="popup-img" onclick="showPhoto('photos/VeniceIT.JPG')">
         <br>Grand Canal / St. Mark's waterfront, Venice
       `);
 
@@ -1043,9 +879,7 @@
     L.marker([32.77373, 129.86317], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Nagasaki, Japan</b><br>
-        <img src="photos/Nagasaki.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Nagasaki.JPG')">
+        <img src="photos/Nagasaki.JPG" class="popup-img" onclick="showPhoto('photos/Nagasaki.JPG')">
         <br>Atomic Bomb Memorial
       `);
 
@@ -1057,18 +891,14 @@
     L.marker([49.61170, 6.18580], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Luxembourg</b><br>
-        <img src="photos/Luxembourg.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Luxembourg.JPG')">
+        <img src="photos/Luxembourg.JPG" class="popup-img" onclick="showPhoto('photos/Luxembourg.JPG')">
         <br>Luxembourg American Cemetery
       `);
 
     L.marker([49.84700, 6.10420], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Luxembourg</b><br>
-        <img src="photos/PattonMemorial.Ettelbruck.Luxembourg.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/PattonMemorial.Ettelbruck.Luxembourg.JPG')">
+        <img src="photos/PattonMemorial.Ettelbruck.Luxembourg.JPG" class="popup-img" onclick="showPhoto('photos/PattonMemorial.Ettelbruck.Luxembourg.JPG')">
         <br>General Patton Memorial, Ettelbruck
       `);
 
@@ -1080,9 +910,7 @@
     L.marker([20.52719, -86.99076], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Cozumel, Mexico</b><br>
-        <img src="photos/Cozumel.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Cozumel.JPG')">
+        <img src="photos/Cozumel.JPG" class="popup-img" onclick="showPhoto('photos/Cozumel.JPG')">
         <br>Cozumel
       `);
 
@@ -1094,9 +922,7 @@
     L.marker([43.73840, 7.42460], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Monaco</b><br>
-        <img src="photos/Monaco.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Monaco.JPG')">
+        <img src="photos/Monaco.JPG" class="popup-img" onclick="showPhoto('photos/Monaco.JPG')">
         <br>Monte Carlo / Monaco harbor area
       `);
 
@@ -1108,18 +934,14 @@
     L.marker([31.05921, -3.98480], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Merzouga, Morocco</b><br>
-        <img src="photos/sahara1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/sahara1.JPG')">
+        <img src="photos/sahara1.JPG" class="popup-img" onclick="showPhoto('photos/sahara1.JPG')">
         <br>Sahara camp
       `);
 
     L.marker([35.78966, -5.81022], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Tangier, Morocco</b><br>
-        <img src="photos/Tangier.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Tangier.JPG')">
+        <img src="photos/Tangier.JPG" class="popup-img" onclick="showPhoto('photos/Tangier.JPG')">
         <br>Tangier
       `);
 
@@ -1131,9 +953,7 @@
     L.marker([52.27130, 4.54640], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Netherlands</b><br>
-        <img src="photos/KeukenhofGardens.NE.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/KeukenhofGardens.NE.JPG')">
+        <img src="photos/KeukenhofGardens.NE.JPG" class="popup-img" onclick="showPhoto('photos/KeukenhofGardens.NE.JPG')">
         <br>Keukenhof Gardens
       `);
 
@@ -1145,9 +965,7 @@
     L.marker([-43.72050, 170.06478], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>New Zealand</b><br>
-        <img src="photos/MuellerHutNZ.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/MuellerHutNZ.JPG')">
+        <img src="photos/MuellerHutNZ.JPG" class="popup-img" onclick="showPhoto('photos/MuellerHutNZ.JPG')">
         <br>Mueller Hut hike
       `);
 
@@ -1159,27 +977,21 @@
     L.marker([59.88620, 29.89340], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Russia</b><br>
-        <img src="photos/CatedralPeterPaul.Peterhof.Russia.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/CatedralPeterPaul.Peterhof.Russia.JPG')">
+        <img src="photos/CatedralPeterPaul.Peterhof.Russia.JPG" class="popup-img" onclick="showPhoto('photos/CatedralPeterPaul.Peterhof.Russia.JPG')">
         <br>Cathedral of Saints Peter and Paul, Peterhof
       `);
 
     L.marker([59.94010, 30.32890], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Russia</b><br>
-        <img src="photos/ChurchSaviorBlood.StPetersburg.Russia.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/ChurchSaviorBlood.StPetersburg.Russia.JPG')">
+        <img src="photos/ChurchSaviorBlood.StPetersburg.Russia.JPG" class="popup-img" onclick="showPhoto('photos/ChurchSaviorBlood.StPetersburg.Russia.JPG')">
         <br>Church of the Savior on Spilled Blood, St. Petersburg
       `);
 
     L.marker([59.88490, 29.90870], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Russia</b><br>
-        <img src="photos/PeterhofPalace.StPetersburg.Russia.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/PeterhofPalace.StPetersburg.Russia.JPG')">
+        <img src="photos/PeterhofPalace.StPetersburg.Russia.JPG" class="popup-img" onclick="showPhoto('photos/PeterhofPalace.StPetersburg.Russia.JPG')">
         <br>Grand Cascade, Peterhof Palace
       `);
 
@@ -1191,54 +1003,42 @@
     L.marker([42.48889, -6.36145], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Cruz de Fierro, Spain</b><br>
-        <img src="photos/CaminoFrances1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/CaminoFrances1.JPG')">
+        <img src="photos/CaminoFrances1.JPG" class="popup-img" onclick="showPhoto('photos/CaminoFrances1.JPG')">
         <br>Camino Frances
       `);
 
     L.marker([42.88068, -8.54529], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Santiago de Compostela, Spain</b><br>
-        <img src="photos/SantiagoDC.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/SantiagoDC.JPG')">
+        <img src="photos/SantiagoDC.JPG" class="popup-img" onclick="showPhoto('photos/SantiagoDC.JPG')">
         <br>Cathedral (Apostle James)
       `);
 
     L.marker([37.37683, -5.98779], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Seville, Spain</b><br>
-        <img src="photos/Sevilla.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Sevilla.JPG')">
+        <img src="photos/Sevilla.JPG" class="popup-img" onclick="showPhoto('photos/Sevilla.JPG')">
         <br>Plaza de Espana
       `);
 
     L.marker([37.12080, -5.45460], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Spain</b><br>
-        <img src="photos/Moron.Spain.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/Moron.Spain.jpg')">
+        <img src="photos/Moron.Spain.JPG" class="popup-img" onclick="showPhoto('photos/Moron.Spain.JPG')">
         <br>Morón de la Frontera
       `);
 
     L.marker([42.46680, -2.44500], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Spain</b><br>
-        <img src="photos/Camino.Logrono.LaRioja.Spain.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/Camino.Logrono.LaRioja.Spain.jpg')">
+        <img src="photos/Camino.Logrono.LaRioja.Spain.JPG" class="popup-img" onclick="showPhoto('photos/Camino.Logrono.LaRioja.Spain.JPG')">
         <br>Camino de Santiago mural, Logroño
       `);
 
     L.marker([42.81770, -1.64250], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Spain</b><br>
-        <img src="photos/RunningBulls.Pamplona.Spain.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/RunningBulls.Pamplona.Spain.JPG')">
+        <img src="photos/RunningBulls.Pamplona.Spain.JPG" class="popup-img" onclick="showPhoto('photos/RunningBulls.Pamplona.Spain.JPG')">
         <br>Running of the Bulls route, Pamplona
       `);
 
@@ -1250,9 +1050,7 @@
     L.marker([59.32530, 18.07110], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Sweden</b><br>
-        <img src="photos/Stockholm.Sweden.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Stockholm.Sweden.JPG')">
+        <img src="photos/Stockholm.Sweden.JPG" class="popup-img" onclick="showPhoto('photos/Stockholm.Sweden.JPG')">
         <br>Stockholm waterfront / Gamla Stan
       `);
 
@@ -1264,18 +1062,14 @@
     L.marker([46.68630, 7.86320], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Switzerland</b><br>
-        <img src="photos/Interlaken.Swiss.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Interlaken.Swiss.JPG')">
+        <img src="photos/Interlaken.Swiss.JPG" class="popup-img" onclick="showPhoto('photos/Interlaken.Swiss.JPG')">
         <br>Interlaken / Lake Brienz area
       `);
 
     L.marker([46.54750, 7.98530], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Switzerland</b><br>
-        <img src="photos/Jungfraujoch.Swiss.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Jungfraujoch.Swiss.JPG')">
+        <img src="photos/Jungfraujoch.Swiss.JPG" class="popup-img" onclick="showPhoto('photos/Jungfraujoch.Swiss.JPG')">
         <br>Jungfraujoch – Aletsch Glacier viewpoint
       `);
 
@@ -1287,9 +1081,7 @@
     L.marker([51.50070, -0.12460], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United Kingdom</b><br>
-        <img src="photos/London.UK.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/London.UK.JPG')">
+        <img src="photos/London.UK.JPG" class="popup-img" onclick="showPhoto('photos/London.UK.JPG')">
         <br>Palace of Westminster / Big Ben, London
       `);
 
@@ -1301,135 +1093,105 @@
     L.marker([61.45448, -149.36819], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Alaska, United States</b><br>
-        <img src="photos/alaska1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/alaska1.JPG')">
+        <img src="photos/alaska1.JPG" class="popup-img" onclick="showPhoto('photos/alaska1.JPG')">
         <br>Anchorage area
       `);
 
     L.marker([19.34671, -154.99831], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Big Island, Hawaii</b><br>
-        <img src="photos/Hawaii.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Hawaii.JPG')">
+        <img src="photos/Hawaii.JPG" class="popup-img" onclick="showPhoto('photos/Hawaii.JPG')">
         <br>Volcano beach
       `);
 
     L.marker([30.62308, -97.70103], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>Georgetown, Texas</b><br>
-        <img src="photos/SunsetRidge1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/SunsetRidge1.JPG')">
+        <img src="photos/SunsetRidge1.JPG" class="popup-img" onclick="showPhoto('photos/SunsetRidge1.JPG')">
         <br>RLF Sunset Ridge
       `);
 
     L.marker([29.50525, -100.02639], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>near Montell Texas</b><br>
-        <img src="photos/brokeoak1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/brokeoak1.JPG')">
+        <img src="photos/brokeoak1.JPG" class="popup-img" onclick="showPhoto('photos/brokeoak1.JPG')">
         <br>RLF BrokeOak (Nueces River)
       `);
 
     L.marker([29.51028, -100.01012], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>near Montell Texas</b><br>
-        <img src="photos/BootHill.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/BootHill.JPG')">
+        <img src="photos/BootHill.JPG" class="popup-img" onclick="showPhoto('photos/BootHill.JPG')">
         <br>Boot Hill hike
       `);
 
     L.marker([31.89310, -104.82220], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/GuadMtnsNP.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/GuadMtnsNP.JPG')">
+        <img src="photos/GuadMtnsNP.JPG" class="popup-img" onclick="showPhoto('photos/GuadMtnsNP.JPG')">
         <br>Guadalupe Mountains National Park, Texas
       `);
 
     L.marker([40.68920, -74.04450], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/NewYork.NY.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/NewYork.NY.JPG')">
+        <img src="photos/NewYork.NY.JPG" class="popup-img" onclick="showPhoto('photos/NewYork.NY.JPG')">
         <br>Statue of Liberty, New York
       `);
 
     L.marker([39.94960, -75.15030], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/Philidelphia.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/Philidelphia.JPG')">
+        <img src="photos/Philidelphia.JPG" class="popup-img" onclick="showPhoto('photos/Philidelphia.JPG')">
         <br>Liberty Bell Center, Philadelphia
       `);
 
     L.marker([37.82970, -122.48300], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/SanFrancisco.CA1.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/SanFrancisco.CA1.JPG')">
+        <img src="photos/SanFrancisco.CA1.JPG" class="popup-img" onclick="showPhoto('photos/SanFrancisco.CA1.JPG')">
         <br>Golden Gate Bridge viewpoint, San Francisco
       `);
 
     L.marker([38.62470, -90.18480], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/StLouis.JPG"
-             class="popup-img"
-             onclick="showPhoto('photos/StLouis.JPG')">
+        <img src="photos/StLouis.JPG" class="popup-img" onclick="showPhoto('photos/StLouis.JPG')">
         <br>Gateway Arch, St. Louis
       `);
 
     L.marker([44.85490, -93.24220], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/MallAmericas.Bloomington.MN.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/MallAmericas.Bloomington.MN.jpg')">
+        <img src="photos/MallAmericas.Bloomington.MN.JPG" class="popup-img" onclick="showPhoto('photos/MallAmericas.Bloomington.MN.JPG')">
         <br>Mall of America / Nickelodeon Universe, Bloomington
       `);
 
     L.marker([29.56370, -95.03470], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/RLFmentorFredHaiseApollo13.ClearLake.TX.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/RLFmentorFredHaiseApollo13.ClearLake.TX.jpg')">
+        <img src="photos/RLFmentorFredHaiseApollo13.ClearLake.TX.JPG" class="popup-img" onclick="showPhoto('photos/RLFmentorFredHaiseApollo13.ClearLake.TX.JPG')">
         <br>Clear Lake / Houston area (approx.)
       `);
 
     L.marker([38.88820, -77.01990], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/AirSpaceSmithsonian.WDC.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/AirSpaceSmithsonian.WDC.jpg')">
+        <img src="photos/AirSpaceSmithsonian.WDC.JPG" class="popup-img" onclick="showPhoto('photos/AirSpaceSmithsonian.WDC.JPG')">
         <br>Smithsonian National Air and Space Museum, Washington DC
       `);
 
     L.marker([32.77970, -96.76450], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/TxStateFair.Dallas.TX.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/TxStateFair.Dallas.TX.jpg')">
+        <img src="photos/TxStateFair.Dallas.TX.JPG" class="popup-img" onclick="showPhoto('photos/TxStateFair.Dallas.TX.JPG')">
         <br>State Fair of Texas, Fair Park, Dallas
       `);
 
     L.marker([29.27040, -103.30190], { icon: circleIcon }).addTo(map)
       .bindPopup(`
         <b>United States</b><br>
-        <img src="photos/BigBendNP.TX.jpg"
-             class="popup-img"
-             onclick="showPhoto('photos/BigBendNP.TX.jpg')">
+        <img src="photos/BigBendNP.TX.JPG" class="popup-img" onclick="showPhoto('photos/BigBendNP.TX.JPG')">
         <br>Big Bend National Park – Chisos Basin area (approx.)
       `);
 
