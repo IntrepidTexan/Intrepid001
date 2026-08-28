@@ -2,105 +2,95 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
 <!-- /travel/map_test.html -->
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Travel Map</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
 <style>
-    html, body {
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-    }
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
 
-    #map {
-        width: 100%;
-        height: 100%;
-    }
+#map {
+    width: 100%;
+    height: 100%;
+}
 
-    .popup-img {
-        width: 180px;
-        border-radius: 6px;
-        margin-top: 6px;
-        cursor: pointer;
-    }
+.popup-img {
+    width: 180px;
+    border-radius: 6px;
+    margin-top: 6px;
+    cursor: pointer;
+}
 
-    .circle-marker {
-        width: 8px;
-        height: 8px;
-        background-color: #00aaff;
-        border-radius: 50%;
-    }
+.circle-marker {
+    width: 8px;
+    height: 8px;
+    background-color: #00aaff;
+    border-radius: 50%;
+}
 
-    /* ============================================================
-       FULL-SCREEN PHOTO VIEWER
-       ============================================================ */
+#photo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.93);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+    touch-action: none;
+}
 
-    #photo-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.93);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        overflow: hidden;
-        touch-action: none;
-        cursor: default;
-    }
+#photo-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    user-select: none;
+    -webkit-user-drag: none;
+    transform-origin: center center;
+    will-change: transform;
+}
 
-    #photo-overlay img {
-        max-width: 90%;
-        max-height: 90%;
-        border-radius: 8px;
-        user-select: none;
-        -webkit-user-drag: none;
-        transform-origin: center center;
-        will-change: transform;
-    }
+#photo-overlay.zoomed {
+    cursor: grab;
+}
 
-    #photo-overlay.zoomed {
-        cursor: grab;
-    }
+#photo-overlay.dragging {
+    cursor: grabbing;
+}
 
-    #photo-overlay.dragging {
-        cursor: grabbing;
-    }
+#back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10001;
+    font-size: 40px;
+    line-height: 40px;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    padding: 8px;
+}
 
-    #back-arrow {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        z-index: 10001;
-        font-size: 40px;
-        line-height: 40px;
-        color: white;
-        cursor: pointer;
-        user-select: none;
-        padding: 8px;
-    }
-
-    #zoom-indicator {
-        position: absolute;
-        top: 25px;
-        right: 25px;
-        z-index: 10001;
-        color: white;
-        background: rgba(0,0,0,0.45);
-        padding: 6px 10px;
-        border-radius: 6px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        user-select: none;
-        pointer-events: none;
-    }
+#zoom-indicator {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 10001;
+    color: white;
+    background: rgba(0,0,0,0.45);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    user-select: none;
+    pointer-events: none;
+}
 </style>
 </head>
 
@@ -117,1084 +107,400 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
+const overlay = document.getElementById('photo-overlay');
+const overlayImg = document.getElementById('overlay-img');
+const zoomIndicator = document.getElementById('zoom-indicator');
 
-    /* ============================================================
-       PHOTO VIEWER
-       ============================================================ */
+let scale = 1;
+let translateX = 0;
+let translateY = 0;
 
-    const overlay = document.getElementById('photo-overlay');
-    const overlayImg = document.getElementById('overlay-img');
-    const zoomIndicator = document.getElementById('zoom-indicator');
+const MIN_SCALE = 1;
+const MAX_SCALE = 5;
 
-    let scale = 1;
-    let translateX = 0;
-    let translateY = 0;
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
 
-    const MIN_SCALE = 1;
-    const MAX_SCALE = 5;
+function updatePhotoTransform() {
+    overlayImg.style.transform =
+        `translate(${translateX}px, ${translateY}px) scale(${scale})`;
 
-    function clamp(value, min, max) {
-        return Math.min(Math.max(value, min), max);
+    zoomIndicator.textContent = scale.toFixed(1) + '×';
+
+    if (scale > 1.01) {
+        overlay.classList.add('zoomed');
+    } else {
+        overlay.classList.remove('zoomed');
     }
+}
 
-    function updatePhotoTransform() {
-        overlayImg.style.transform =
-            `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+function resetPhotoZoom() {
+    scale = 1;
+    translateX = 0;
+    translateY = 0;
+    updatePhotoTransform();
+}
 
-        zoomIndicator.textContent = scale.toFixed(1) + '×';
+function showPhoto(src) {
+    resetPhotoZoom();
+    overlayImg.src = src;
+    overlay.style.display = 'flex';
+}
 
-        if (scale > 1.01) {
-            overlay.classList.add('zoomed');
-        } else {
-            overlay.classList.remove('zoomed');
-        }
+function closePhoto() {
+    overlay.style.display = 'none';
+    overlayImg.src = '';
+    resetPhotoZoom();
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.style.display === 'flex') {
+        closePhoto();
     }
+});
 
-    function resetPhotoZoom() {
-        scale = 1;
+overlay.addEventListener('wheel', function(e) {
+    if (overlay.style.display !== 'flex') return;
+
+    e.preventDefault();
+
+    scale += e.deltaY < 0 ? 0.20 : -0.20;
+    scale = clamp(scale, MIN_SCALE, MAX_SCALE);
+
+    if (scale === 1) {
         translateX = 0;
         translateY = 0;
-        updatePhotoTransform();
     }
 
-    function showPhoto(src) {
-        resetPhotoZoom();
-        overlayImg.src = src;
-        overlay.style.display = 'flex';
+    updatePhotoTransform();
+}, { passive: false });
+
+let mouseDragging = false;
+let mouseStartX = 0;
+let mouseStartY = 0;
+let mouseStartTranslateX = 0;
+let mouseStartTranslateY = 0;
+
+overlay.addEventListener('mousedown', function(e) {
+    if (scale <= 1 || e.target.id === 'back-arrow') return;
+
+    mouseDragging = true;
+    mouseStartX = e.clientX;
+    mouseStartY = e.clientY;
+    mouseStartTranslateX = translateX;
+    mouseStartTranslateY = translateY;
+    overlay.classList.add('dragging');
+
+    e.preventDefault();
+});
+
+window.addEventListener('mousemove', function(e) {
+    if (!mouseDragging) return;
+
+    translateX = mouseStartTranslateX + (e.clientX - mouseStartX);
+    translateY = mouseStartTranslateY + (e.clientY - mouseStartY);
+
+    updatePhotoTransform();
+});
+
+window.addEventListener('mouseup', function() {
+    mouseDragging = false;
+    overlay.classList.remove('dragging');
+});
+
+overlayImg.addEventListener('dblclick', function(e) {
+    e.preventDefault();
+    resetPhotoZoom();
+});
+
+let touchMode = '';
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTranslateX = 0;
+let touchStartTranslateY = 0;
+let pinchStartDistance = 0;
+let pinchStartScale = 1;
+
+function touchDistance(touch1, touch2) {
+    const dx = touch2.clientX - touch1.clientX;
+    const dy = touch2.clientY - touch1.clientY;
+
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+overlay.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+        touchMode = 'pinch';
+        pinchStartDistance = touchDistance(e.touches[0], e.touches[1]);
+        pinchStartScale = scale;
+        return;
     }
 
-    function closePhoto() {
-        overlay.style.display = 'none';
-        overlayImg.src = '';
-        resetPhotoZoom();
-    }
+    if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && overlay.style.display === 'flex') {
-            closePhoto();
-        }
-    });
-
-    /* ============================================================
-       MOUSE WHEEL ZOOM
-       ============================================================ */
-
-    overlay.addEventListener('wheel', function(e) {
-
-        if (overlay.style.display !== 'flex') {
-            return;
-        }
-
-        e.preventDefault();
-
-        const zoomAmount = 0.20;
-
-        if (e.deltaY < 0) {
-            scale += zoomAmount;
+        if (scale > 1.01) {
+            touchMode = 'pan';
+            touchStartTranslateX = translateX;
+            touchStartTranslateY = translateY;
         } else {
-            scale -= zoomAmount;
+            touchMode = 'swipe';
         }
+    }
+}, { passive: false });
 
-        scale = clamp(scale, MIN_SCALE, MAX_SCALE);
+overlay.addEventListener('touchmove', function(e) {
+    e.preventDefault();
 
-        if (scale === 1) {
+    if (touchMode === 'pinch' && e.touches.length === 2) {
+        const currentDistance = touchDistance(e.touches[0], e.touches[1]);
+        const ratio = currentDistance / pinchStartDistance;
+
+        scale = clamp(
+            pinchStartScale * ratio,
+            MIN_SCALE,
+            MAX_SCALE
+        );
+
+        if (scale <= 1.01) {
+            scale = 1;
             translateX = 0;
             translateY = 0;
         }
 
         updatePhotoTransform();
-
-    }, { passive: false });
-
-    /* ============================================================
-       CLICK AND DRAG WHEN ZOOMED
-       ============================================================ */
-
-    let mouseDragging = false;
-    let mouseStartX = 0;
-    let mouseStartY = 0;
-    let mouseStartTranslateX = 0;
-    let mouseStartTranslateY = 0;
-
-    overlay.addEventListener('mousedown', function(e) {
-
-        if (scale <= 1) {
-            return;
-        }
-
-        if (e.target.id === 'back-arrow') {
-            return;
-        }
-
-        mouseDragging = true;
-
-        mouseStartX = e.clientX;
-        mouseStartY = e.clientY;
-
-        mouseStartTranslateX = translateX;
-        mouseStartTranslateY = translateY;
-
-        overlay.classList.add('dragging');
-
-        e.preventDefault();
-    });
-
-    window.addEventListener('mousemove', function(e) {
-
-        if (!mouseDragging) {
-            return;
-        }
-
-        translateX =
-            mouseStartTranslateX +
-            (e.clientX - mouseStartX);
-
-        translateY =
-            mouseStartTranslateY +
-            (e.clientY - mouseStartY);
-
-        updatePhotoTransform();
-    });
-
-    window.addEventListener('mouseup', function() {
-        mouseDragging = false;
-        overlay.classList.remove('dragging');
-    });
-
-    overlayImg.addEventListener('dblclick', function(e) {
-        e.preventDefault();
-        resetPhotoZoom();
-    });
-
-    /* ============================================================
-       PHONE / TABLET PINCH ZOOM
-       ============================================================ */
-
-    let touchMode = '';
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    let touchStartTranslateX = 0;
-    let touchStartTranslateY = 0;
-
-    let pinchStartDistance = 0;
-    let pinchStartScale = 1;
-
-    function touchDistance(touch1, touch2) {
-        const dx = touch2.clientX - touch1.clientX;
-        const dy = touch2.clientY - touch1.clientY;
-
-        return Math.sqrt(dx * dx + dy * dy);
+        return;
     }
 
-    overlay.addEventListener('touchstart', function(e) {
+    if (touchMode === 'pan' && e.touches.length === 1) {
+        translateX =
+            touchStartTranslateX +
+            (e.touches[0].clientX - touchStartX);
 
-        if (e.touches.length === 2) {
+        translateY =
+            touchStartTranslateY +
+            (e.touches[0].clientY - touchStartY);
 
-            touchMode = 'pinch';
+        updatePhotoTransform();
+    }
+}, { passive: false });
 
-            pinchStartDistance =
-                touchDistance(e.touches[0], e.touches[1]);
+overlay.addEventListener('touchend', function(e) {
+    if (
+        touchMode === 'swipe' &&
+        scale === 1 &&
+        e.changedTouches.length > 0
+    ) {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
 
-            pinchStartScale = scale;
+        const diffX = Math.abs(endX - touchStartX);
+        const diffY = Math.abs(endY - touchStartY);
 
-            return;
+        if (diffX > 70 || diffY > 70) {
+            closePhoto();
         }
-
-        if (e.touches.length === 1) {
-
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-
-            if (scale > 1.01) {
-
-                touchMode = 'pan';
-
-                touchStartTranslateX = translateX;
-                touchStartTranslateY = translateY;
-
-            } else {
-
-                touchMode = 'swipe';
-            }
-        }
-
-    }, { passive: false });
-
-    overlay.addEventListener('touchmove', function(e) {
-
-        e.preventDefault();
-
-        if (
-            touchMode === 'pinch' &&
-            e.touches.length === 2
-        ) {
-
-            const currentDistance =
-                touchDistance(e.touches[0], e.touches[1]);
-
-            const ratio =
-                currentDistance / pinchStartDistance;
-
-            scale =
-                clamp(
-                    pinchStartScale * ratio,
-                    MIN_SCALE,
-                    MAX_SCALE
-                );
-
-            if (scale <= 1.01) {
-                scale = 1;
-                translateX = 0;
-                translateY = 0;
-            }
-
-            updatePhotoTransform();
-
-            return;
-        }
-
-        if (
-            touchMode === 'pan' &&
-            e.touches.length === 1
-        ) {
-
-            translateX =
-                touchStartTranslateX +
-                (e.touches[0].clientX - touchStartX);
-
-            translateY =
-                touchStartTranslateY +
-                (e.touches[0].clientY - touchStartY);
-
-            updatePhotoTransform();
-        }
-
-    }, { passive: false });
-
-    overlay.addEventListener('touchend', function(e) {
-
-        if (
-            touchMode === 'swipe' &&
-            scale === 1 &&
-            e.changedTouches.length > 0
-        ) {
-
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-
-            const diffX =
-                Math.abs(endX - touchStartX);
-
-            const diffY =
-                Math.abs(endY - touchStartY);
-
-            if (diffX > 70 || diffY > 70) {
-                closePhoto();
-            }
-        }
-
-        if (e.touches.length === 0) {
-            touchMode = '';
-        }
-
-    }, { passive: false });
-
-    /* ============================================================
-       MAP
-       ============================================================ */
-
-    var map = L.map('map').setView([20, 0], 2);
-
-    L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap',
-            noWrap: true,
-            bounds: [[-90, -180], [90, 180]]
-        }
-    ).addTo(map);
-
-    const circleIcon = L.divIcon({
-        className: 'circle-marker',
-        iconSize: [8, 8],
-        iconAnchor: [4, 4],
-        popupAnchor: [0, -6]
-    });
-
-
-    // ============================================================
-    // AFGHANISTAN
-    // ============================================================
-
-    L.marker([34.56924, 69.21270], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Afghanistan</b><br>
-        <img src="photos/afghan1.JPG" class="popup-img" onclick="showPhoto('photos/afghan1.JPG')">
-        <br>Kabul airport
-      `);
-
-    L.marker([36.68718, 67.14808], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Afghanistan</b><br>
-        <img src="photos/afghan2.JPG" class="popup-img" onclick="showPhoto('photos/afghan2.JPG')">
-        <br>Masar-i-Sharif area
-      `);
-
-    L.marker([31.53652, 65.89503], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Afghanistan</b><br>
-        <img src="photos/afghan3.JPG" class="popup-img" onclick="showPhoto('photos/afghan3.JPG')">
-        <br>Kandahar area
-      `);
-
-    L.marker([33.59750, 69.23250], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Afghanistan</b><br>
-        <img src="photos/gardez1.JPG" class="popup-img" onclick="showPhoto('photos/gardez1.JPG')">
-        <br>Former Soviet observation/artillery post overlooking Gardez
-      `);
-
-    L.marker([36.70690, 67.20970], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Afghanistan</b><br>
-        <img src="photos/Mazar1Sharif2.JPG" class="popup-img" onclick="showPhoto('photos/Mazar1Sharif2.JPG')">
-        <br>Mazar-i-Sharif Airport
-      `);
-
-    L.marker([36.70920, 67.11010], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Afghanistan</b><br>
-        <img src="photos/Mazar1Sharif2b.JPG" class="popup-img" onclick="showPhoto('photos/Mazar1Sharif2b.JPG')">
-        <br>Mazar-i-Sharif city center (approx.)
-      `);
-
-
-    // ============================================================
-    // ANTARCTICA
-    // ============================================================
-
-    L.marker([-77.84239, 166.67097], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Antarctica</b><br>
-        <img src="photos/mcmurdo1.JPG" class="popup-img" onclick="showPhoto('photos/mcmurdo1.JPG')">
-        <br>McMurdo
-      `);
-
-    L.marker([-77.84345, 166.78143], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Antarctica</b><br>
-        <img src="photos/antarctica1.JPG" class="popup-img" onclick="showPhoto('photos/antarctica1.JPG')">
-        <br>Ross Ice Shelf
-      `);
-
-    L.marker([-90.00000, 0.00000], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Antarctica</b><br>
-        <img src="photos/southpole1.JPG" class="popup-img" onclick="showPhoto('photos/southpole1.JPG')">
-        <br>South Pole
-      `);
-
-
-    // ============================================================
-    // ARGENTINA
-    // ============================================================
-
-    L.marker([-25.69161, -54.43819], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Argentina</b><br>
-        <img src="photos/IguazuFalls.JPG" class="popup-img" onclick="showPhoto('photos/IguazuFalls.JPG')">
-        <br>Iguazu Falls
-      `);
-
-    L.marker([-49.29901, -72.92002], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Argentina</b><br>
-        <img src="photos/Patagonia1.JPG" class="popup-img" onclick="showPhoto('photos/Patagonia1.JPG')">
-        <br>Mirador del Fitz Roy
-      `);
-
-    L.marker([-50.46769, -73.03041], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Argentina</b><br>
-        <img src="photos/Patagonia2.JPG" class="popup-img" onclick="showPhoto('photos/Patagonia2.JPG')">
-        <br>Perito Moreno Glacier
-      `);
-
-
-    // ============================================================
-    // AUSTRALIA
-    // ============================================================
-
-    L.marker([-33.85926, 151.21547], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Sydney, Australia</b><br>
-        <img src="photos/Sydney.JPG" class="popup-img" onclick="showPhoto('photos/Sydney.JPG')">
-        <br>Opera House
-      `);
-
-
-    // ============================================================
-    // AUSTRIA
-    // ============================================================
-
-    L.marker([47.53300, 14.06600], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Austria</b><br>
-        <img src="photos/EnnsValley.Styria.Austria.JPG" class="popup-img" onclick="showPhoto('photos/EnnsValley.Styria.Austria.JPG')">
-        <br>Pürgg / Enns Valley, Styria (approx.)
-      `);
-
-    L.marker([47.79720, 13.04770], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Austria</b><br>
-        <img src="photos/Salzburg.AU.JPG" class="popup-img" onclick="showPhoto('photos/Salzburg.AU.JPG')">
-        <br>Hohensalzburg Fortress, Salzburg
-      `);
-
-    L.marker([47.33300, 13.15400], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Austria</b><br>
-        <img src="photos/StVeit.AU.JPG" class="popup-img" onclick="showPhoto('photos/StVeit.AU.JPG')">
-        <br>St. Veit im Pongau area / ski viewpoint (approx.)
-      `);
-
-
-    // ============================================================
-    // BELGIUM
-    // ============================================================
-
-    L.marker([50.84670, 4.35250], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Belgium</b><br>
-        <img src="photos/Brussels.Belgium.JPG" class="popup-img" onclick="showPhoto('photos/Brussels.Belgium.JPG')">
-        <br>Grand Place, Brussels
-      `);
-
-    L.marker([50.67860, 4.40550], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Belgium</b><br>
-        <img src="photos/WaterlooBattlefield.1815.Belgium.JPG" class="popup-img" onclick="showPhoto('photos/WaterlooBattlefield.1815.Belgium.JPG')">
-        <br>Lion's Mound, Waterloo Battlefield
-      `);
-
-
-    // ============================================================
-    // CHINA
-    // ============================================================
-
-    L.marker([39.90837, 116.39753], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Beijing, China</b><br>
-        <img src="photos/TiananmenGateBeijing.JPG" class="popup-img" onclick="showPhoto('photos/TiananmenGateBeijing.JPG')">
-        <br>Tiananmen Gate
-      `);
-
-    L.marker([34.38410, 109.27850], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Xi'an, China</b><br>
-        <img src="photos/TerracottaXianChina.JPG" class="popup-img" onclick="showPhoto('photos/TerracottaXianChina.JPG')">
-        <br>Terracotta Soldiers
-      `);
-
-    L.marker([40.43195, 116.57045], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Great Wall of China</b><br>
-        <img src="photos/GreatWallChina.JPG" class="popup-img" onclick="showPhoto('photos/GreatWallChina.JPG')">
-        <br>Great Wall hike
-      `);
-
-
-    // ============================================================
-    // CZECH REPUBLIC
-    // ============================================================
-
-    L.marker([50.08750, 14.42130], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Czech Republic</b><br>
-        <img src="photos/Prague.CzechRepublic.JPG" class="popup-img" onclick="showPhoto('photos/Prague.CzechRepublic.JPG')">
-        <br>Old Town Square, Prague
-      `);
-
-
-    // ============================================================
-    // DENMARK
-    // ============================================================
-
-    L.marker([55.67980, 12.59100], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Denmark</b><br>
-        <img src="photos/Copenhagen.Denmark.JPG" class="popup-img" onclick="showPhoto('photos/Copenhagen.Denmark.JPG')">
-        <br>Nyhavn, Copenhagen
-      `);
-
-
-    // ============================================================
-    // EGYPT
-    // ============================================================
-
-    L.marker([29.97530, 31.13760], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Egypt</b><br>
-        <img src="photos/GizaPlateau.Cairo.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/GizaPlateau.Cairo.Egypt.JPG')">
-        <br>Giza Plateau – Great Sphinx and Great Pyramid
-      `);
-
-    L.marker([25.73810, 32.60640], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Egypt</b><br>
-        <img src="photos/HatshepsutTemple.Luxor.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/HatshepsutTemple.Luxor.Egypt.JPG')">
-        <br>Temple of Hatshepsut, Luxor
-      `);
-
-    L.marker([24.02500, 32.88470], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Egypt</b><br>
-        <img src="photos/IsisPhilae.Agilia.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/IsisPhilae.Agilia.Egypt.JPG')">
-        <br>Temple of Isis, Philae / Agilkia Island
-      `);
-
-    L.marker([24.45250, 32.92800], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Egypt</b><br>
-        <img src="photos/KomOmbo.Aswan.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/KomOmbo.Aswan.Egypt.JPG')">
-        <br>Temple of Kom Ombo
-      `);
-
-    L.marker([25.69950, 32.63910], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Egypt</b><br>
-        <img src="photos/LuxorTemple.Luxor.Egypt.JPG" class="popup-img" onclick="showPhoto('photos/LuxorTemple.Luxor.Egypt.JPG')">
-        <br>Luxor Temple
-      `);
-
-
-    // ============================================================
-    // ESTONIA
-    // ============================================================
-
-    L.marker([59.43720, 24.74280], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Estonia</b><br>
-        <img src="photos/Tallinn.Estonia.JPG" class="popup-img" onclick="showPhoto('photos/Tallinn.Estonia.JPG')">
-        <br>Toompea viewpoint over Tallinn
-      `);
-
-
-    // ============================================================
-    // FRANCE
-    // ============================================================
-
-    L.marker([49.20870, 5.42330], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>France</b><br>
-        <img src="photos/DouaumontOssuary130Kremains.Verdun.France.JPG" class="popup-img" onclick="showPhoto('photos/DouaumontOssuary130Kremains.Verdun.France.JPG')">
-        <br>Douaumont Ossuary, Verdun
-      `);
-
-    L.marker([49.21600, 5.43940], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>France</b><br>
-        <img src="photos/FortDouaumont.VerdunBattlefield1916.France.JPG" class="popup-img" onclick="showPhoto('photos/FortDouaumont.VerdunBattlefield1916.France.JPG')">
-        <br>Fort Douaumont, Verdun Battlefield
-      `);
-
-    L.marker([48.92110, 7.48180], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>France</b><br>
-        <img src="photos/LichtenbergVillage.Alsace.France.JPG" class="popup-img" onclick="showPhoto('photos/LichtenbergVillage.Alsace.France.JPG')">
-        <br>Château de Lichtenberg overlooking Lichtenberg, Alsace
-      `);
-
-    L.marker([48.85300, 2.34990], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>France</b><br>
-        <img src="photos/NotreDame.ParisFR.JPG" class="popup-img" onclick="showPhoto('photos/NotreDame.ParisFR.JPG')">
-        <br>Notre-Dame Cathedral, Paris
-      `);
-
-    L.marker([48.85540, 2.34500], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>France</b><br>
-        <img src="photos/StChappel.ParisFR.JPG" class="popup-img" onclick="showPhoto('photos/StChappel.ParisFR.JPG')">
-        <br>Sainte-Chapelle, Paris
-      `);
-
-    L.marker([48.58190, 7.75000], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>France</b><br>
-        <img src="photos/Strasburg.France.JPG" class="popup-img" onclick="showPhoto('photos/Strasburg.France.JPG')">
-        <br>Strasbourg Cathedral
-      `);
-
-
-    // ============================================================
-    // GERMANY
-    // ============================================================
-
-    L.marker([48.26900, 11.46810], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Germany</b><br>
-        <img src="photos/Dachau.GE.JPG" class="popup-img" onclick="showPhoto('photos/Dachau.GE.JPG')">
-        <br>Dachau Concentration Camp Memorial Site
-      `);
-
-    L.marker([49.41060, 8.71530], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Germany</b><br>
-        <img src="photos/Heidelburg.GE.JPG" class="popup-img" onclick="showPhoto('photos/Heidelburg.GE.JPG')">
-        <br>Heidelberg Castle
-      `);
-
-    L.marker([48.13740, 11.57550], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Germany</b><br>
-        <img src="photos/Munich.GE.JPG" class="popup-img" onclick="showPhoto('photos/Munich.GE.JPG')">
-        <br>Marienplatz / New Town Hall, Munich
-      `);
-
-    L.marker([47.55760, 10.74980], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Germany</b><br>
-        <img src="photos/NeuschwansteinCastle.GE.JPG" class="popup-img" onclick="showPhoto('photos/NeuschwansteinCastle.GE.JPG')">
-        <br>Neuschwanstein Castle
-      `);
-
-    L.marker([47.59600, 11.06460], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Germany</b><br>
-        <img src="photos/Ogerammergau.GE.JPG" class="popup-img" onclick="showPhoto('photos/Ogerammergau.GE.JPG')">
-        <br>Oberammergau village center
-      `);
-
-    L.marker([49.75970, 6.64400], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Germany</b><br>
-        <img src="photos/PortaNigra.Trier.Germany.JPG" class="popup-img" onclick="showPhoto('photos/PortaNigra.Trier.Germany.JPG')">
-        <br>Porta Nigra, Trier
-      `);
-
-
-    // ============================================================
-    // GIBRALTAR
-    // ============================================================
-
-    L.marker([36.14778, -5.35471], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Gibraltar</b><br>
-        <img src="photos/Gibraltar.JPG" class="popup-img" onclick="showPhoto('photos/Gibraltar.JPG')">
-        <br>Sunborn Harbor
-      `);
-
-
-    // ============================================================
-    // GUAM
-    // ============================================================
-
-    L.marker([13.43994, 144.73020], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Guam</b><br>
-        <img src="photos/Guam.JPG" class="popup-img" onclick="showPhoto('photos/Guam.JPG')">
-        <br>Guam
-      `);
-
-
-    // ============================================================
-    // HUNGARY
-    // ============================================================
-
-    L.marker([47.50200, 19.03480], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Hungary</b><br>
-        <img src="photos/Budapest.Danube.Hungary.JPG" class="popup-img" onclick="showPhoto('photos/Budapest.Danube.Hungary.JPG')">
-        <br>Fisherman's Bastion view toward Parliament, Budapest
-      `);
-
-
-    // ============================================================
-    // ICELAND
-    // ============================================================
-
-    L.marker([63.87929, -22.44529], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Iceland</b><br>
-        <img src="photos/iceland1.JPG" class="popup-img" onclick="showPhoto('photos/iceland1.JPG')">
-        <br>Blue Lagoon
-      `);
-
-
-    // ============================================================
-    // ITALY
-    // ============================================================
-
-    L.marker([44.40703, 8.93404], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Genoa, Italy</b><br>
-        <img src="photos/GenoaIT.JPG" class="popup-img" onclick="showPhoto('photos/GenoaIT.JPG')">
-        <br>Central Fountain
-      `);
-
-    L.marker([45.46739, 9.18956], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Milan, Italy</b><br>
-        <img src="photos/MilanIT.JPG" class="popup-img" onclick="showPhoto('photos/MilanIT.JPG')">
-        <br>Opera House
-      `);
-
-    L.marker([43.72277, 10.39478], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Pisa, Italy</b><br>
-        <img src="photos/pisa1.JPG" class="popup-img" onclick="showPhoto('photos/pisa1.JPG')">
-        <br>Leaning Tower of Pisa
-      `);
-
-    L.marker([40.74857, 14.48414], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Pompeii, Italy</b><br>
-        <img src="photos/pompeii1.JPG" class="popup-img" onclick="showPhoto('photos/pompeii1.JPG')">
-        <br>Ruins of Pompeii
-      `);
-
-    L.marker([41.88952, 12.49152], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Rome, Italy</b><br>
-        <img src="photos/rome1.JPG" class="popup-img" onclick="showPhoto('photos/rome1.JPG')">
-        <br>Coliseum
-      `);
-
-    L.marker([45.43400, 12.33970], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Italy</b><br>
-        <img src="photos/VeniceIT.JPG" class="popup-img" onclick="showPhoto('photos/VeniceIT.JPG')">
-        <br>Grand Canal / St. Mark's waterfront, Venice
-      `);
-
-
-    // ============================================================
-    // JAPAN
-    // ============================================================
-
-    L.marker([32.77373, 129.86317], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Nagasaki, Japan</b><br>
-        <img src="photos/Nagasaki.JPG" class="popup-img" onclick="showPhoto('photos/Nagasaki.JPG')">
-        <br>Atomic Bomb Memorial
-      `);
-
-
-    // ============================================================
-    // LUXEMBOURG
-    // ============================================================
-
-    L.marker([49.61170, 6.18580], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Luxembourg</b><br>
-        <img src="photos/Luxembourg.JPG" class="popup-img" onclick="showPhoto('photos/Luxembourg.JPG')">
-        <br>Luxembourg American Cemetery
-      `);
-
-    L.marker([49.84700, 6.10420], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Luxembourg</b><br>
-        <img src="photos/PattonMemorial.Ettelbruck.Luxembourg.JPG" class="popup-img" onclick="showPhoto('photos/PattonMemorial.Ettelbruck.Luxembourg.JPG')">
-        <br>General Patton Memorial, Ettelbruck
-      `);
-
-
-    // ============================================================
-    // MEXICO
-    // ============================================================
-
-    L.marker([20.52719, -86.99076], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Cozumel, Mexico</b><br>
-        <img src="photos/Cozumel.JPG" class="popup-img" onclick="showPhoto('photos/Cozumel.JPG')">
-        <br>Cozumel
-      `);
-
-
-    // ============================================================
-    // MONACO
-    // ============================================================
-
-    L.marker([43.73840, 7.42460], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Monaco</b><br>
-        <img src="photos/Monaco.JPG" class="popup-img" onclick="showPhoto('photos/Monaco.JPG')">
-        <br>Monte Carlo / Monaco harbor area
-      `);
-
-
-    // ============================================================
-    // MOROCCO
-    // ============================================================
-
-    L.marker([31.05921, -3.98480], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Merzouga, Morocco</b><br>
-        <img src="photos/sahara1.JPG" class="popup-img" onclick="showPhoto('photos/sahara1.JPG')">
-        <br>Sahara camp
-      `);
-
-    L.marker([35.78966, -5.81022], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Tangier, Morocco</b><br>
-        <img src="photos/Tangier.JPG" class="popup-img" onclick="showPhoto('photos/Tangier.JPG')">
-        <br>Tangier
-      `);
-
-
-    // ============================================================
-    // NETHERLANDS
-    // ============================================================
-
-    L.marker([52.27130, 4.54640], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Netherlands</b><br>
-        <img src="photos/KeukenhofGardens.NE.JPG" class="popup-img" onclick="showPhoto('photos/KeukenhofGardens.NE.JPG')">
-        <br>Keukenhof Gardens
-      `);
-
-
-    // ============================================================
-    // NEW ZEALAND
-    // ============================================================
-
-    L.marker([-43.72050, 170.06478], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>New Zealand</b><br>
-        <img src="photos/MuellerHutNZ.JPG" class="popup-img" onclick="showPhoto('photos/MuellerHutNZ.JPG')">
-        <br>Mueller Hut hike
-      `);
-
-
-    // ============================================================
-    // RUSSIA
-    // ============================================================
-
-    L.marker([59.88620, 29.89340], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Russia</b><br>
-        <img src="photos/CatedralPeterPaul.Peterhof.Russia.JPG" class="popup-img" onclick="showPhoto('photos/CatedralPeterPaul.Peterhof.Russia.JPG')">
-        <br>Cathedral of Saints Peter and Paul, Peterhof
-      `);
-
-    L.marker([59.94010, 30.32890], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Russia</b><br>
-        <img src="photos/ChurchSaviorBlood.StPetersburg.Russia.JPG" class="popup-img" onclick="showPhoto('photos/ChurchSaviorBlood.StPetersburg.Russia.JPG')">
-        <br>Church of the Savior on Spilled Blood, St. Petersburg
-      `);
-
-    L.marker([59.88490, 29.90870], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Russia</b><br>
-        <img src="photos/PeterhofPalace.StPetersburg.Russia.JPG" class="popup-img" onclick="showPhoto('photos/PeterhofPalace.StPetersburg.Russia.JPG')">
-        <br>Grand Cascade, Peterhof Palace
-      `);
-
-
-    // ============================================================
-    // SPAIN
-    // ============================================================
-
-    L.marker([42.48889, -6.36145], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Cruz de Fierro, Spain</b><br>
-        <img src="photos/CaminoFrances1.JPG" class="popup-img" onclick="showPhoto('photos/CaminoFrances1.JPG')">
-        <br>Camino Frances
-      `);
-
-    L.marker([42.88068, -8.54529], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Santiago de Compostela, Spain</b><br>
-        <img src="photos/SantiagoDC.JPG" class="popup-img" onclick="showPhoto('photos/SantiagoDC.JPG')">
-        <br>Cathedral (Apostle James)
-      `);
-
-    L.marker([37.37683, -5.98779], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Seville, Spain</b><br>
-        <img src="photos/Sevilla.JPG" class="popup-img" onclick="showPhoto('photos/Sevilla.JPG')">
-        <br>Plaza de Espana
-      `);
-
-    L.marker([37.12080, -5.45460], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Spain</b><br>
-        <img src="photos/Moron.Spain.JPG" class="popup-img" onclick="showPhoto('photos/Moron.Spain.JPG')">
-        <br>Morón de la Frontera
-      `);
-
-    L.marker([42.46680, -2.44500], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Spain</b><br>
-        <img src="photos/Camino.Logrono.LaRioja.Spain.JPG" class="popup-img" onclick="showPhoto('photos/Camino.Logrono.LaRioja.Spain.JPG')">
-        <br>Camino de Santiago mural, Logroño
-      `);
-
-    L.marker([42.81770, -1.64250], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Spain</b><br>
-        <img src="photos/RunningBulls.Pamplona.Spain.JPG" class="popup-img" onclick="showPhoto('photos/RunningBulls.Pamplona.Spain.JPG')">
-        <br>Running of the Bulls route, Pamplona
-      `);
-
-
-    // ============================================================
-    // SWEDEN
-    // ============================================================
-
-    L.marker([59.32530, 18.07110], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Sweden</b><br>
-        <img src="photos/Stockholm.Sweden.JPG" class="popup-img" onclick="showPhoto('photos/Stockholm.Sweden.JPG')">
-        <br>Stockholm waterfront / Gamla Stan
-      `);
-
-
-    // ============================================================
-    // SWITZERLAND
-    // ============================================================
-
-    L.marker([46.68630, 7.86320], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Switzerland</b><br>
-        <img src="photos/Interlaken.Swiss.JPG" class="popup-img" onclick="showPhoto('photos/Interlaken.Swiss.JPG')">
-        <br>Interlaken / Lake Brienz area
-      `);
-
-    L.marker([46.54750, 7.98530], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Switzerland</b><br>
-        <img src="photos/Jungfraujoch.Swiss.JPG" class="popup-img" onclick="showPhoto('photos/Jungfraujoch.Swiss.JPG')">
-        <br>Jungfraujoch – Aletsch Glacier viewpoint
-      `);
-
-
-    // ============================================================
-    // UNITED KINGDOM
-    // ============================================================
-
-    L.marker([51.50070, -0.12460], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United Kingdom</b><br>
-        <img src="photos/London.UK.JPG" class="popup-img" onclick="showPhoto('photos/London.UK.JPG')">
-        <br>Palace of Westminster / Big Ben, London
-      `);
-
-
-    // ============================================================
-    // UNITED STATES
-    // ============================================================
-
-    L.marker([61.45448, -149.36819], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Alaska, United States</b><br>
-        <img src="photos/alaska1.JPG" class="popup-img" onclick="showPhoto('photos/alaska1.JPG')">
-        <br>Anchorage area
-      `);
-
-    L.marker([19.34671, -154.99831], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Big Island, Hawaii</b><br>
-        <img src="photos/Hawaii.JPG" class="popup-img" onclick="showPhoto('photos/Hawaii.JPG')">
-        <br>Volcano beach
-      `);
-
-    L.marker([30.62308, -97.70103], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>Georgetown, Texas</b><br>
-        <img src="photos/SunsetRidge1.JPG" class="popup-img" onclick="showPhoto('photos/SunsetRidge1.JPG')">
-        <br>RLF Sunset Ridge
-      `);
-
-    L.marker([29.50525, -100.02639], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>near Montell Texas</b><br>
-        <img src="photos/brokeoak1.JPG" class="popup-img" onclick="showPhoto('photos/brokeoak1.JPG')">
-        <br>RLF BrokeOak (Nueces River)
-      `);
-
-    L.marker([29.51028, -100.01012], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>near Montell Texas</b><br>
-        <img src="photos/BootHill.JPG" class="popup-img" onclick="showPhoto('photos/BootHill.JPG')">
-        <br>Boot Hill hike
-      `);
-
-    L.marker([31.89310, -104.82220], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/GuadMtnsNP.JPG" class="popup-img" onclick="showPhoto('photos/GuadMtnsNP.JPG')">
-        <br>Guadalupe Mountains National Park, Texas
-      `);
-
-    L.marker([40.68920, -74.04450], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/NewYork.NY.JPG" class="popup-img" onclick="showPhoto('photos/NewYork.NY.JPG')">
-        <br>Statue of Liberty, New York
-      `);
-
-    L.marker([39.94960, -75.15030], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/Philidelphia.JPG" class="popup-img" onclick="showPhoto('photos/Philidelphia.JPG')">
-        <br>Liberty Bell Center, Philadelphia
-      `);
-
-    L.marker([37.82970, -122.48300], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/SanFrancisco.CA1.JPG" class="popup-img" onclick="showPhoto('photos/SanFrancisco.CA1.JPG')">
-        <br>Golden Gate Bridge viewpoint, San Francisco
-      `);
-
-    L.marker([38.62470, -90.18480], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/StLouis.JPG" class="popup-img" onclick="showPhoto('photos/StLouis.JPG')">
-        <br>Gateway Arch, St. Louis
-      `);
-
-    L.marker([44.85490, -93.24220], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/MallAmericas.Bloomington.MN.JPG" class="popup-img" onclick="showPhoto('photos/MallAmericas.Bloomington.MN.JPG')">
-        <br>Mall of America / Nickelodeon Universe, Bloomington
-      `);
-
-    L.marker([29.56370, -95.03470], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/RLFmentorFredHaiseApollo13.ClearLake.TX.JPG" class="popup-img" onclick="showPhoto('photos/RLFmentorFredHaiseApollo13.ClearLake.TX.JPG')">
-        <br>Clear Lake / Houston area (approx.)
-      `);
-
-    L.marker([38.88820, -77.01990], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/AirSpaceSmithsonian.WDC.JPG" class="popup-img" onclick="showPhoto('photos/AirSpaceSmithsonian.WDC.JPG')">
-        <br>Smithsonian National Air and Space Museum, Washington DC
-      `);
-
-    L.marker([32.77970, -96.76450], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/TxStateFair.Dallas.TX.JPG" class="popup-img" onclick="showPhoto('photos/TxStateFair.Dallas.TX.JPG')">
-        <br>State Fair of Texas, Fair Park, Dallas
-      `);
-
-    L.marker([29.27040, -103.30190], { icon: circleIcon }).addTo(map)
-      .bindPopup(`
-        <b>United States</b><br>
-        <img src="photos/BigBendNP.TX.JPG" class="popup-img" onclick="showPhoto('photos/BigBendNP.TX.JPG')">
-        <br>Big Bend National Park – Chisos Basin area (approx.)
-      `);
-
+    }
+
+    if (e.touches.length === 0) {
+        touchMode = '';
+    }
+}, { passive: false });
+
+const map = L.map('map').setView([20, 0], 2);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap',
+    noWrap: true,
+    bounds: [[-90, -180], [90, 180]]
+}).addTo(map);
+
+const circleIcon = L.divIcon({
+    className: 'circle-marker',
+    iconSize: [8, 8],
+    iconAnchor: [4, 4],
+    popupAnchor: [0, -6]
+});
+
+const locations = [
+
+    // Afghanistan
+    [34.56924, 69.21270, 'Afghanistan', 'afghan1.JPG', 'Kabul airport'],
+    [36.68718, 67.14808, 'Afghanistan', 'afghan2.JPG', 'Masar-i-Sharif area'],
+    [31.53652, 65.89503, 'Afghanistan', 'afghan3.JPG', 'Kandahar area'],
+    [33.59750, 69.23250, 'Afghanistan', 'gardez1.JPG', 'Former Soviet observation/artillery post overlooking Gardez'],
+    [36.70690, 67.20970, 'Afghanistan', 'Mazar1Sharif2.JPG', 'Mazar-i-Sharif Airport'],
+    [36.70920, 67.11010, 'Afghanistan', 'Mazar1Sharif2b.JPG', 'Mazar-i-Sharif city center (approx.)'],
+
+    // Antarctica
+    [-77.84239, 166.67097, 'Antarctica', 'mcmurdo1.JPG', 'McMurdo'],
+    [-77.84345, 166.78143, 'Antarctica', 'antarctica1.JPG', 'Ross Ice Shelf'],
+    [-90.00000, 0.00000, 'Antarctica', 'southpole1.JPG', 'South Pole'],
+
+    // Argentina
+    [-25.69161, -54.43819, 'Argentina', 'IguazuFalls.JPG', 'Iguazu Falls'],
+    [-49.29901, -72.92002, 'Argentina', 'Patagonia1.JPG', 'Mirador del Fitz Roy'],
+    [-50.46769, -73.03041, 'Argentina', 'Patagonia2.JPG', 'Perito Moreno Glacier'],
+
+    // Australia
+    [-33.85926, 151.21547, 'Sydney, Australia', 'Sydney.JPG', 'Opera House'],
+
+    // Austria
+    [47.53300, 14.06600, 'Austria', 'EnnsValley.Styria.Austria.JPG', 'Pürgg / Enns Valley, Styria (approx.)'],
+    [47.79720, 13.04770, 'Austria', 'Salzburg.AU.JPG', 'Hohensalzburg Fortress, Salzburg'],
+    [47.33300, 13.15400, 'Austria', 'StVeit.AU.JPG', 'St. Veit im Pongau area / ski viewpoint (approx.)'],
+
+    // Belgium
+    [51.20810, 3.22490, 'Belgium', 'Brugge.BE.JPG', 'Bruges Markt / Belfry'],
+    [50.84670, 4.35250, 'Belgium', 'Brussels.Belgium.JPG', 'Grand Place, Brussels'],
+    [50.67860, 4.40550, 'Belgium', 'WaterlooBattlefield.1815.Belgium.JPG', 'Lion\'s Mound, Waterloo Battlefield'],
+
+    // China
+    [39.90837, 116.39753, 'Beijing, China', 'TiananmenGateBeijing.JPG', 'Tiananmen Gate'],
+    [34.38410, 109.27850, 'Xi\'an, China', 'TerracottaXianChina.JPG', 'Terracotta Soldiers'],
+    [40.43195, 116.57045, 'Great Wall of China', 'GreatWallChina.JPG', 'Great Wall hike'],
+
+    // Czech Republic
+    [50.08750, 14.42130, 'Czech Republic', 'Prague.CzechRepublic.JPG', 'Old Town Square, Prague'],
+
+    // Denmark
+    [55.67980, 12.59100, 'Denmark', 'Copenhagen.Denmark.JPG', 'Nyhavn, Copenhagen'],
+
+    // Egypt
+    [29.97530, 31.13760, 'Egypt', 'GizaPlateau.Cairo.Egypt.JPG', 'Giza Plateau – Great Sphinx and Great Pyramid'],
+    [25.73810, 32.60640, 'Egypt', 'HatshepsutTemple.Luxor.Egypt.JPG', 'Temple of Hatshepsut, Luxor'],
+    [24.02500, 32.88470, 'Egypt', 'IsisPhilae.Agilia.Egypt.JPG', 'Temple of Isis, Philae / Agilkia Island'],
+    [24.45250, 32.92800, 'Egypt', 'KomOmbo.Aswan.Egypt.JPG', 'Temple of Kom Ombo'],
+    [25.69950, 32.63910, 'Egypt', 'LuxorTemple.Luxor.Egypt.JPG', 'Luxor Temple'],
+
+    // Estonia
+    [59.43720, 24.74280, 'Estonia', 'Tallinn.Estonia.JPG', 'Toompea viewpoint over Tallinn'],
+
+    // France
+    [42.87450, -0.11900, 'France', 'GorgesDeCauterets.TourDeFrance.France.JPG', 'Gorges de Cauterets – 2015 Tour de France route (approx.)'],
+    [49.20870, 5.42330, 'France', 'DouaumontOssuary130Kremains.Verdun.France.JPG', 'Douaumont Ossuary, Verdun'],
+    [49.21600, 5.43940, 'France', 'FortDouaumont.VerdunBattlefield1916.France.JPG', 'Fort Douaumont, Verdun Battlefield'],
+    [48.92110, 7.48180, 'France', 'LichtenbergVillage.Alsace.France.JPG', 'Château de Lichtenberg overlooking Lichtenberg, Alsace'],
+    [48.85300, 2.34990, 'France', 'NotreDame.ParisFR.JPG', 'Notre-Dame Cathedral, Paris'],
+    [48.85540, 2.34500, 'France', 'StChappel.ParisFR.JPG', 'Sainte-Chapelle, Paris'],
+    [48.58190, 7.75000, 'France', 'Strasburg.France.JPG', 'Strasbourg Cathedral'],
+
+    // Germany
+    [52.50750, 13.39040, 'Germany', 'Berlin.GE.JPG', 'Checkpoint Charlie, Berlin'],
+    [48.26900, 11.46810, 'Germany', 'Dachau.GE.JPG', 'Dachau Concentration Camp Memorial Site'],
+    [49.41060, 8.71530, 'Germany', 'Heidelburg.GE.JPG', 'Heidelberg Castle'],
+    [48.13740, 11.57550, 'Germany', 'Munich.GE.JPG', 'Marienplatz / New Town Hall, Munich'],
+    [47.55760, 10.74980, 'Germany', 'NeuschwansteinCastle.GE.JPG', 'Neuschwanstein Castle'],
+    [47.59600, 11.06460, 'Germany', 'Ogerammergau.GE.JPG', 'Oberammergau village center'],
+    [49.75970, 6.64400, 'Germany', 'PortaNigra.Trier.Germany.JPG', 'Porta Nigra, Trier'],
+
+    // Gibraltar
+    [36.14778, -5.35471, 'Gibraltar', 'Gibraltar.JPG', 'Sunborn Harbor'],
+
+    // Guam
+    [13.43994, 144.73020, 'Guam', 'Guam.JPG', 'Guam'],
+
+    // Hungary
+    [47.50200, 19.03480, 'Hungary', 'Budapest.Danube.Hungary.JPG', 'Fisherman\'s Bastion view toward Parliament, Budapest'],
+
+    // Iceland
+    [63.87929, -22.44529, 'Iceland', 'iceland1.JPG', 'Blue Lagoon'],
+
+    // Italy
+    [44.40703, 8.93404, 'Genoa, Italy', 'GenoaIT.JPG', 'Central Fountain'],
+    [45.46739, 9.18956, 'Milan, Italy', 'MilanIT.JPG', 'Opera House'],
+    [43.72277, 10.39478, 'Pisa, Italy', 'pisa1.JPG', 'Leaning Tower of Pisa'],
+    [40.74857, 14.48414, 'Pompeii, Italy', 'pompeii1.JPG', 'Ruins of Pompeii'],
+    [41.88952, 12.49152, 'Rome, Italy', 'rome1.JPG', 'Coliseum'],
+    [45.43400, 12.33970, 'Italy', 'VeniceIT.JPG', 'Grand Canal / St. Mark\'s waterfront, Venice'],
+
+    // Japan
+    [32.77373, 129.86317, 'Nagasaki, Japan', 'Nagasaki.JPG', 'Atomic Bomb Memorial'],
+
+    // Luxembourg
+    [49.61170, 6.18580, 'Luxembourg', 'Luxembourg.JPG', 'Luxembourg American Cemetery'],
+    [49.84700, 6.10420, 'Luxembourg', 'PattonMemorial.Ettelbruck.Luxembourg.JPG', 'General Patton Memorial, Ettelbruck'],
+
+    // Mexico
+    [20.52719, -86.99076, 'Cozumel, Mexico', 'Cozumel.JPG', 'Cozumel'],
+
+    // Monaco
+    [43.73840, 7.42460, 'Monaco', 'Monaco.JPG', 'Monte Carlo / Monaco harbor area'],
+
+    // Morocco
+    [31.05921, -3.98480, 'Merzouga, Morocco', 'sahara1.JPG', 'Sahara camp'],
+    [35.78966, -5.81022, 'Tangier, Morocco', 'Tangier.JPG', 'Tangier'],
+
+    // Netherlands
+    [52.27130, 4.54640, 'Netherlands', 'KeukenhofGardens.NE.JPG', 'Keukenhof Gardens'],
+
+    // New Zealand
+    [-43.72050, 170.06478, 'New Zealand', 'MuellerHutNZ.JPG', 'Mueller Hut hike'],
+
+    // Portugal
+    [37.74120, -25.67560, 'Portugal', 'Azores.Portugal.JPG', 'Azores – Ponta Delgada area (approx.)'],
+
+    // Russia
+    [59.88620, 29.89340, 'Russia', 'CatedralPeterPaul.Peterhof.Russia.JPG', 'Cathedral of Saints Peter and Paul, Peterhof'],
+    [59.94010, 30.32890, 'Russia', 'ChurchSaviorBlood.StPetersburg.Russia.JPG', 'Church of the Savior on Spilled Blood, St. Petersburg'],
+    [59.88490, 29.90870, 'Russia', 'PeterhofPalace.StPetersburg.Russia.JPG', 'Grand Cascade, Peterhof Palace'],
+
+    // Spain
+    [40.95250, -4.13270, 'Spain', 'alcazar.segovia.spain.JPG', 'Alcázar of Segovia'],
+    [41.41450, 2.15270, 'Spain', 'Barcelona.SP.JPG', 'Park Güell, Barcelona'],
+    [42.48889, -6.36145, 'Cruz de Fierro, Spain', 'CaminoFrances1.JPG', 'Camino Frances'],
+    [42.88068, -8.54529, 'Santiago de Compostela, Spain', 'SantiagoDC.JPG', 'Cathedral (Apostle James)'],
+    [37.37683, -5.98779, 'Seville, Spain', 'Sevilla.JPG', 'Plaza de Espana'],
+    [37.12080, -5.45460, 'Spain', 'Moron.Spain.JPG', 'Morón de la Frontera'],
+    [42.46680, -2.44500, 'Spain', 'Camino.Logrono.LaRioja.Spain.JPG', 'Camino de Santiago mural, Logroño'],
+    [42.81770, -1.64250, 'Spain', 'RunningBulls.Pamplona.Spain.JPG', 'Running of the Bulls route, Pamplona'],
+
+    // Sweden
+    [59.32530, 18.07110, 'Sweden', 'Stockholm.Sweden.JPG', 'Stockholm waterfront / Gamla Stan'],
+
+    // Switzerland
+    [46.68630, 7.86320, 'Switzerland', 'Interlaken.Swiss.JPG', 'Interlaken / Lake Brienz area'],
+    [46.54750, 7.98530, 'Switzerland', 'Jungfraujoch.Swiss.JPG', 'Jungfraujoch – Aletsch Glacier viewpoint'],
+
+    // Turkey
+    [41.00540, 28.97680, 'Turkey', 'BlueMosque.Istanbul.TK.JPG', 'Blue Mosque, Istanbul'],
+
+    // United Kingdom
+    [51.50070, -0.12460, 'United Kingdom', 'London.UK.JPG', 'Palace of Westminster / Big Ben, London'],
+
+    // United States
+    [61.45448, -149.36819, 'Alaska, United States', 'alaska1.JPG', 'Anchorage area'],
+    [19.34671, -154.99831, 'Big Island, Hawaii', 'Hawaii.JPG', 'Volcano beach'],
+    [30.62308, -97.70103, 'Georgetown, Texas', 'SunsetRidge1.JPG', 'RLF Sunset Ridge'],
+    [29.50525, -100.02639, 'near Montell Texas', 'brokeoak1.JPG', 'RLF BrokeOak (Nueces River)'],
+    [29.51028, -100.01012, 'near Montell Texas', 'BootHill.JPG', 'Boot Hill hike'],
+    [31.89310, -104.82220, 'United States', 'GuadMtnsNP.JPG', 'Guadalupe Mountains National Park, Texas'],
+    [40.68920, -74.04450, 'United States', 'NewYork.NY.JPG', 'Statue of Liberty, New York'],
+    [39.94960, -75.15030, 'United States', 'Philidelphia.JPG', 'Liberty Bell Center, Philadelphia'],
+    [37.82970, -122.48300, 'United States', 'SanFrancisco.CA1.JPG', 'Golden Gate Bridge viewpoint, San Francisco'],
+    [38.62470, -90.18480, 'United States', 'StLouis.JPG', 'Gateway Arch, St. Louis'],
+    [44.85490, -93.24220, 'United States', 'MallAmericas.Bloomington.MN.JPG', 'Mall of America / Nickelodeon Universe, Bloomington'],
+    [29.56370, -95.03470, 'United States', 'RLFmentorFredHaiseApollo13.ClearLake.TX.JPG', 'Clear Lake / Houston area (approx.)'],
+    [38.88820, -77.01990, 'United States', 'AirSpaceSmithsonian.WDC.JPG', 'Smithsonian National Air and Space Museum, Washington DC'],
+    [32.77970, -96.76450, 'United States', 'TxStateFair.Dallas.TX.JPG', 'State Fair of Texas, Fair Park, Dallas'],
+    [29.27040, -103.30190, 'United States', 'BigBendNP.TX.JPG', 'Big Bend National Park – Chisos Basin area (approx.)']
+];
+
+for (const [lat, lon, title, filename, description] of locations) {
+    const photo = `photos/${filename}`;
+
+    L.marker([lat, lon], { icon: circleIcon })
+        .addTo(map)
+        .bindPopup(`
+            <b>${title}</b><br>
+            <img src="${photo}" class="popup-img"
+                 onclick="showPhoto('${photo}')">
+            <br>${description}
+        `);
+}
 </script>
 
 </body>
