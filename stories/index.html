@@ -12,22 +12,23 @@
             max-width: 900px;
             margin: auto;
             padding: 20px;
-            text-align: left;        /* paragraphs left-aligned */
+            text-align: left;
             line-height: 1.5;
         }
 
         h1 {
-            text-align: center;      /* center all titles */
+            text-align: center;
             margin-top: 0;
         }
 
         p {
             margin-left: auto;
             margin-right: auto;
-            padding: 0 1rem;         /* keeps text off phone edges */
-            max-width: 80ch;         /* ideal reading width */
+            padding: 0 1rem;
+            max-width: 80ch;
         }
 
+        /* Story buttons - full width solid blue */
         .hotbutton {
             display: block;
             width: 100%;
@@ -53,6 +54,31 @@
             pointer-events: none;
         }
 
+        /* Venue buttons - smaller and semi-transparent */
+        .venuebutton {
+            display: block;
+            width: 100%;
+            max-width: 360px;
+            padding: 10px 20px;
+            margin: 22px auto;
+
+            background-color: rgba(0, 120, 212, 0.30);
+
+            color: #0078D4;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            text-align: center;
+            box-sizing: border-box;
+
+            border: 1px solid rgba(0, 120, 212, 0.40);
+        }
+
+        .venuebutton:hover {
+            background-color: rgba(0, 120, 212, 0.50);
+        }
+
         .footer-link {
             display: block;
             text-align: center;
@@ -70,18 +96,20 @@
         I've been blessed to have led a very dynamic, exciting and adventurous life.
         My professional career was in aerospace operations but I'm now retired to
         handyman work, travel, hobbies, and the endless and unsuccessful quest to
-        understand women.  I hope that brought a smile and not a frown; perhaps this 
-        is your first insight into my sense of humor.  It helps to learn to laugh at oneself.
+        understand women. I hope that brought a smile and not a frown; perhaps this
+        is your first insight into my sense of humor. It helps to learn to laugh at oneself.
     </p>
+
     <p>
-        I worked as a NASA Systems Engineer working Shuttle flights in Mission Control, 
-        a USAF fighter pilot, a senior officer and wartime commander in Afghanistan, 
+        I worked as a NASA Systems Engineer working Shuttle flights in Mission Control,
+        a USAF fighter pilot, a senior officer and wartime commander in Afghanistan,
         and led large teams running facilities and projects in Europe and Antarctica.
-        I recently started a new job as president of a company that helps foreign entities 
-        transition into United States markets.  They actually hired my resume as I was
+        I recently started a new job as president of a company that helps foreign entities
+        transition into United States markets. They actually hired my resume as I was
         very clear that I had no intention of actually working other than to go to some
         meetings on occasion and press some flesh and smile for the cameras.
     </p>
+
     <p>
         I was surrounded by death or the imminent threat of death most of my career
         and many of my stories have tragic elements. These experiences have shaped
@@ -89,6 +117,7 @@
         on earth. Always remember that we are all just walking each other home - find
         a way to be kind and forgive with all the grace you would hope to receive.
     </p>
+
     <p>
         In retirement my enduring life desire is to be kind to ALL, even if doing so
         seems controversial to SOME, and to leave things better than I found them.
@@ -96,10 +125,7 @@
         view situations through their own filters. Such is our human condition.
         All I can do is what I feel to be right, kind, and proper in the moment and situation.
     </p>
-  
-    <!-- Story Teller venues -->  
-    <a class="hotbutton" href="https://www.nchmuseum.org/nchm-events/sotl-mans-best-friend" target="_blank">Stories on the Lawn, Teller</a>
- 
+
     <!-- Active story buttons -->
     <a class="hotbutton" href="https://drive.google.com/file/d/1-k8bgg1ISfQC7BhaMvVlMsJLW_iqBBW2/view" target="_blank">Lucky!</a>
     <a class="hotbutton" href="https://drive.google.com/file/d/1p8_qklODgJ4ZTi4Z0SU7YEUzzXJLGv0c/view" target="_blank">The Other Ron</a>
@@ -115,10 +141,21 @@
     <a class="hotbutton" href="https://drive.google.com/file/d/1JLC4XVpQvU7Hbh6813O4-HrGeTRKiZ0b/view" target="_blank">Revenge of the Goat</a>
     <a class="hotbutton" href="https://drive.google.com/file/d/1E-TYK5swFuK1K7rr3yF3B6lKCl_nDX7k/view" target="_blank">Suicide Bomber - disturbing content</a>
 
-    <!-- Placeholder story buttons -->
-    <a class="hotbutton disabled" href="#">There are LOTS more stories coming SOON</a>
+    <!-- Placeholder story button -->
+    <a class="hotbutton disabled" href="#">
+        There are LOTS more stories coming SOON
+    </a>
 
+    <!-- Story Teller venues -->
+    <a class="venuebutton"
+       href="https://www.nchmuseum.org/nchm-events/sotl-mans-best-friend"
+       target="_blank">
+        Stories on the Lawn, Teller
+    </a>
+    
+    <a class="footer-link" href="/">
+        Back to Home
+    </a>
 
-    <a class="footer-link" href="IntrepidTexan.html">Back to Home</a>
 </body>
 </html>
