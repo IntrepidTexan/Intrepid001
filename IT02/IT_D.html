@@ -13,7 +13,7 @@
 
             /* Background image */
             background-image: url('/IT02/F16ShuttleKSC.jpg');
-            background-size: contain;       /* fits entire image to phone width */
+            background-size: contain;
             background-repeat: no-repeat;
             background-position: top center;
             background-attachment: scroll;
@@ -28,12 +28,9 @@
             }
         }
 
-        /* Overlay */
         .overlay {
             min-height: 100vh;
             padding: 20px;
-
-            /* FIX: limit width so content never exceeds image width */
             max-width: 600px;
             margin: 0 auto;
         }
@@ -46,9 +43,11 @@
         .btn {
             display: block;
             width: 100%;
-            max-width: 360px;   /* FIX: buttons no longer wider than image */
+            max-width: 360px;
             padding: 12px 24px;
-            background-color: #007BFF;
+
+            background-color: rgba(0, 123, 255, 0.30);
+
             color: white;
             text-decoration: none;
             font-size: 20px;
@@ -56,10 +55,12 @@
             font-weight: bold;
             margin: 10px auto;
             text-align: center;
+
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color: rgba(0, 123, 255, 0.55);
         }
 
         .quote {
@@ -69,11 +70,19 @@
             font-weight: bold;
             font-style: italic;
             margin-top: 40px;
+
+            color: gold;
+        }
+
+        .back-link {
+            color: gold;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
+
 <div class="overlay">
 
     <!-- Blank lines to reveal the background image -->
@@ -103,7 +112,6 @@
         </a>
     </div>
 
-    <!-- Quote moved to bottom -->
     <div class="quote">
         There are none so blind as those who will not see,<br>
         None so deaf as those who refuse to listen,<br>
@@ -111,9 +119,12 @@
     </div>
 
     <p class="center">
-        <a href="IntrepidTexan_home.html">Back to Home</a>
+        <a class="back-link" href="IntrepidTexan_home.html">
+            Back to Home
+        </a>
     </p>
 
 </div>
+
 </body>
 </html>
