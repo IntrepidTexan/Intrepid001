@@ -81,13 +81,15 @@
                  0px  0px 4px royalblue;
         }
 
-        .back-link {
-            color: black;
+        /* Back to Home link */
+        .back-link,
+        .back-link:link,
+        .back-link:visited,
+        .back-link:hover,
+        .back-link:active {
+            color: #000000 !important;
             font-weight: bold;
-            text-shadow: none;
-        }
-
-        .back-link:hover {
+            text-shadow: none !important;
             text-decoration: underline;
         }
     </style>
@@ -139,7 +141,10 @@
     </div>
 
     <p class="center">
-        <a class="back-link" href="/">
+        <a
+            class="back-link"
+            href="https://intrepidtexan.com/"
+            style="color:#000000 !important; text-shadow:none !important;">
             Back to Home
         </a>
     </p>
