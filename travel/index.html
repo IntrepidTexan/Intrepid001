@@ -1,9 +1,9 @@
+<!-- /travel/index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<!-- /travel/index.html -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
@@ -37,10 +37,6 @@ html, body {
     background-color: #00aaff;
     border-radius: 50%;
 }
-
-/* ============================================================
-   FULL-SCREEN PHOTO VIEWER
-   ============================================================ */
 
 #photo-overlay {
     position: fixed;
@@ -126,22 +122,14 @@ html, body {
 <div id="error-message"></div>
 
 <div id="photo-overlay">
-
     <div id="back-arrow" onclick="closePhoto()">←</div>
-
     <div id="zoom-indicator">1.0×</div>
-
     <img id="overlay-img" src="" alt="Travel photo">
-
 </div>
 
-
-<!-- Leaflet -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- SheetJS - reads Excel workbook -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 
 <script>
 
@@ -149,9 +137,14 @@ html, body {
    PHOTO VIEWER
    ============================================================ */
 
-const overlay = document.getElementById('photo-overlay');
-const overlayImg = document.getElementById('overlay-img');
-const zoomIndicator = document.getElementById('zoom-indicator');
+const overlay =
+    document.getElementById('photo-overlay');
+
+const overlayImg =
+    document.getElementById('overlay-img');
+
+const zoomIndicator =
+    document.getElementById('zoom-indicator');
 
 let scale = 1;
 let translateX = 0;
@@ -212,10 +205,6 @@ function closePhoto() {
 }
 
 
-/* ============================================================
-   ESCAPE KEY CLOSES PHOTO
-   ============================================================ */
-
 document.addEventListener('keydown', function(e) {
 
     if (
@@ -227,10 +216,6 @@ document.addEventListener('keydown', function(e) {
 
 });
 
-
-/* ============================================================
-   MOUSE WHEEL ZOOM
-   ============================================================ */
 
 overlay.addEventListener('wheel', function(e) {
 
@@ -246,14 +231,14 @@ overlay.addEventListener('wheel', function(e) {
         scale -= 0.20;
     }
 
-    scale = clamp(
-        scale,
-        MIN_SCALE,
-        MAX_SCALE
-    );
+    scale =
+        clamp(
+            scale,
+            MIN_SCALE,
+            MAX_SCALE
+        );
 
     if (scale === 1) {
-
         translateX = 0;
         translateY = 0;
     }
@@ -262,10 +247,6 @@ overlay.addEventListener('wheel', function(e) {
 
 }, { passive: false });
 
-
-/* ============================================================
-   CLICK AND DRAG WHEN ZOOMED
-   ============================================================ */
 
 let mouseDragging = false;
 
@@ -329,10 +310,6 @@ window.addEventListener('mouseup', function() {
 });
 
 
-/* ============================================================
-   DOUBLE CLICK RESETS ZOOM
-   ============================================================ */
-
 overlayImg.addEventListener('dblclick', function(e) {
 
     e.preventDefault();
@@ -341,11 +318,6 @@ overlayImg.addEventListener('dblclick', function(e) {
 
 });
 
-
-/* ============================================================
-   PHONE / TABLET
-   PINCH ZOOM + PAN + SWIPE CLOSE
-   ============================================================ */
 
 let touchMode = '';
 
@@ -529,9 +501,7 @@ overlay.addEventListener('touchend', function(e) {
 
 
     if (e.touches.length === 0) {
-
         touchMode = '';
-
     }
 
 }, { passive: false });
@@ -549,7 +519,7 @@ const map =
         1.2
      );
 
-    
+
 L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
@@ -616,27 +586,23 @@ function showError(message) {
 /* ============================================================
    READ IT_travel_photodata.xlsx
 
-   ONLY WORKSHEET READ:
+   ONLY SHEET:
    current
 
-   REQUIRED COLUMN HEADINGS:
+   NO HEADER ROW REQUIRED
 
-   Latitude
-   Longitude
-   Country
-   Location
-   Filename
+   COLUMN A = Latitude
+   COLUMN B = Longitude
+   COLUMN C = Country
+   COLUMN D = Description
+   COLUMN E = Picture filename
 
+   FIRST LOCATION CAN START IN ROW 1
    ============================================================ */
 
 async function loadPhotoData() {
 
     try {
-
-        /*
-           Date.now() prevents the browser from
-           using an old cached Excel file.
-        */
 
         const response =
             await fetch(
@@ -667,10 +633,6 @@ async function loadPhotoData() {
             );
 
 
-        /*
-           READ ONLY THE "current" WORKSHEET
-        */
-
         const sheet =
             workbook.Sheets['current'];
 
@@ -685,28 +647,25 @@ async function loadPhotoData() {
 
 
         /*
-           Convert worksheet rows into objects.
+           header: 1 means:
+           DO NOT treat row 1 as column titles.
 
-           Excel row 1 becomes the field names:
-
-           Latitude
-           Longitude
-           Country
-           Location
-           Filename
+           Every worksheet row is returned
+           as a simple array.
         */
 
         const rows =
             XLSX.utils.sheet_to_json(
                 sheet,
                 {
+                    header: 1,
                     defval: ''
                 }
             );
 
 
         console.log(
-            'Current photo rows loaded:',
+            'Photo rows found:',
             rows.length
         );
 
@@ -716,45 +675,52 @@ async function loadPhotoData() {
 
 
                 /*
-                   READ THE FIVE COLUMNS
+                   FIXED COLUMN POSITIONS
+
+                   A = row[0] = Latitude
+                   B = row[1] = Longitude
+                   C = row[2] = Country
+                   D = row[3] = Description
+                   E = row[4] = Filename
                 */
 
                 const latitude =
-                    Number(row.Latitude);
+                    Number(row[0]);
 
 
                 const longitude =
-                    Number(row.Longitude);
+                    Number(row[1]);
 
 
                 const country =
                     String(
-                        row.Country || ''
+                        row[2] || ''
                     ).trim();
 
 
-                const location =
+                const description =
                     String(
-                        row.Location || ''
+                        row[3] || ''
                     ).trim();
 
 
                 const filename =
                     String(
-                        row.Filename || ''
+                        row[4] || ''
                     ).trim();
 
 
                 /*
-                   IGNORE BLANK ROWS
+                   IGNORE COMPLETELY BLANK ROWS
                 */
 
                 if (
-                    !row.Latitude &&
-                    !row.Longitude &&
-                    !country &&
-                    !location &&
-                    !filename
+                    row.every(
+                        cell =>
+                            cell === '' ||
+                            cell === null ||
+                            cell === undefined
+                    )
                 ) {
 
                     return;
@@ -763,7 +729,7 @@ async function loadPhotoData() {
 
 
                 /*
-                   CHECK LATITUDE / LONGITUDE
+                   VALIDATE COORDINATES
                 */
 
                 if (
@@ -772,8 +738,9 @@ async function loadPhotoData() {
                 ) {
 
                     console.warn(
-                        'Invalid coordinates on Excel row',
-                        index + 2
+                        'Invalid coordinates on spreadsheet row',
+                        index + 1,
+                        row
                     );
 
                     return;
@@ -782,45 +749,33 @@ async function loadPhotoData() {
 
 
                 /*
-                   CHECK PHOTO FILENAME
+                   VALIDATE FILENAME
                 */
 
                 if (!filename) {
 
                     console.warn(
-                        'Missing filename on Excel row',
-                        index + 2
+                        'Missing filename on spreadsheet row',
+                        index + 1
                     );
 
                     return;
 
                 }
 
-
-                /*
-                   PHOTO LOCATION
-                */
 
                 const photo =
                     'photos/' +
                     filename;
 
 
-                /*
-                   SAFE TEXT FOR POPUP
-                */
-
                 const safeCountry =
                     escapeHTML(country);
 
 
-                const safeLocation =
-                    escapeHTML(location);
+                const safeDescription =
+                    escapeHTML(description);
 
-
-                /*
-                   SAFE FILENAME FOR onclick
-                */
 
                 const safePhotoJS =
                     photo.replaceAll(
@@ -830,7 +785,7 @@ async function loadPhotoData() {
 
 
                 /*
-                   CREATE THE LEAFLET MARKER
+                   CREATE MAP DOT
                 */
 
                 L.marker(
@@ -855,7 +810,7 @@ async function loadPhotoData() {
                         onclick="showPhoto('${safePhotoJS}')"
                     >
 
-                    <br>${safeLocation}
+                    <br>${safeDescription}
 
                 `);
 
@@ -879,7 +834,7 @@ async function loadPhotoData() {
 
 
 /* ============================================================
-   LOAD CURRENT TRAVEL PHOTO DATA
+   LOAD PHOTO DATA
    ============================================================ */
 
 loadPhotoData();
