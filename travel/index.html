@@ -38,6 +38,51 @@ html, body {
     border-radius: 50%;
 }
 
+
+/* ============================================================
+   MAP TITLE / HOME LINK
+   Moves and zooms with the Leaflet map
+   ============================================================ */
+
+.map-title-marker {
+    background: transparent;
+    border: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.map-under-construction {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #802020;
+
+    text-shadow:
+        -1px -1px 2px white,
+         1px -1px 2px white,
+        -1px  1px 2px white,
+         1px  1px 2px white;
+}
+
+.map-home-link,
+.map-home-link:link,
+.map-home-link:visited {
+    display: inline-block;
+    margin-top: 4px;
+
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+
+    color: black;
+    text-decoration: underline;
+}
+
+.map-home-link:hover {
+    color: #802020;
+}
+
+
 #photo-overlay {
     position: fixed;
     inset: 0;
@@ -541,6 +586,44 @@ const circleIcon =
         iconAnchor: [4, 4],
         popupAnchor: [0, -6]
     });
+
+
+
+/* ============================================================
+   UNDER CONSTRUCTION / HOME MAP LABEL
+   ============================================================ */
+
+const mapTitleIcon =
+    L.divIcon({
+        className: 'map-title-marker',
+
+        html: `
+            <div class="map-under-construction">
+                UNDER CONSTRUCTION
+            </div>
+
+            <a
+                class="map-home-link"
+                href="https://intrepidtexan.com/"
+            >
+                Home
+            </a>
+        `,
+
+        iconSize: [300, 65],
+        iconAnchor: [150, 0]
+    });
+
+
+L.marker(
+    [72, 0],
+    {
+        icon: mapTitleIcon,
+        interactive: true,
+        zIndexOffset: 1000
+    }
+)
+.addTo(map);
 
 
 
