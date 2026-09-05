@@ -3,121 +3,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>Intrepid Texan Hikes</title>
 
   <style>
     body {
+      font-size: 20px;
       font-family: Arial, sans-serif;
-      margin: 0;
+      max-width: 900px;
+      margin: auto;
       padding: 20px;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    h1,
+    h2 {
       text-align: center;
-      background-color: #ffffff;
-      color: #222;
     }
 
-    h1 {
-      margin-top: 10px;
-      margin-bottom: 10px;
-      color: #802020;
-    }
-
-    .subtitle {
-      margin-bottom: 30px;
-      font-size: 18px;
-      color: #555;
-    }
-
-    .hike-list {
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .hike-link {
+    .header-image {
       display: block;
-      margin: 12px auto;
-      padding: 12px 18px;
-      max-width: 500px;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
+    .hotbutton {
+      display: block;
+      width: 100%;
+      max-width: 100ch;
+      padding: 12px 20px;
+      margin: 15px auto;
       background-color: #0078D4;
       color: white;
-
       text-decoration: none;
       font-size: 18px;
-      font-weight: bold;
-
-      border-radius: 6px;
+      border-radius: 5px;
+      text-align: center;
+      box-sizing: border-box;
     }
 
-    .hike-link:hover {
+    .hotbutton:hover {
       background-color: #005A9E;
     }
 
-    .home-link {
-      display: inline-block;
-      margin-top: 35px;
+    .hotbutton.disabled {
+      background-color: #888;
+      opacity: 0.5;
+      pointer-events: none;
+    }
 
-      color: #000000;
+    .footer-link {
+      display: block;
+      text-align: center;
+      margin: 40px auto 20px;
+      font-size: 18px;
+      color: black;
       font-weight: bold;
       text-decoration: underline;
-      font-size: 17px;
+    }
+
+    p {
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 1rem;
+      max-width: 80ch;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>INTREPID TEXAN HIKES</h1>
+  <h2 style="font-style: italic; margin-top: 0;">
+    “It is not the mountain we conquer, but ourselves.”
+  </h2>
 
-  <div class="subtitle">
-    Camino de Santiago Hikes
-  </div>
-
-  <div class="hike-list">
-
-    <a class="hike-link" href="/hikes/Camino01.html">
-      Camino Frances.1 — 2013
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino02.html">
-      Camino Frances.2 — 2014
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino03.html">
-      Camino Frances.3 — 2015
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino04.html">
-      Camino Portugues — 2017
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino05.html">
-      Camino Norte.1 — 2018
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino06.html">
-      Camino Norte.2 — 2023
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino07.html">
-      Camino Norte.3 — 2023
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino08.html">
-      Camino Madrid — 2024
-    </a>
-
-    <a class="hike-link" href="/hikes/Camino09.html">
-      Camino San Salvador — 2024
-    </a>
-
-  </div>
-
-  <a class="home-link" href="/">
-    Back to Home
+  <a
+    href="https://caminoways.com/history-of-the-camino-de-santiago"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img
+      src="/IT02/CaminoDeSantiagoTrails.jpg"
+      alt="Camino de Santiago Trails Map"
+      class="header-image"
+    />
   </a>
+
+  <h1>My Favorite Camino Santiago Hikes</h1>
+
+  <p>
+    Each of these journeys along the Camino de Santiago has been deeply meaningful,
+    both spiritually and personally. I've walked through sunlit vineyards, along
+    stormy coastlines, and into peaceful villages where time seems to stand still.
+    Here are my favorites, each with its own story.
+  </p>
+
+  <a class="footer-link" href="/">Back to Home</a>
+
+  <a class="hotbutton" href="/hikes/Camino01.html">
+    CAMINO FRANCES.1 — 2013
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino02.html">
+    CAMINO FRANCES.2 — 2014
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino03.html">
+    CAMINO FRANCES.3 — 2015
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino04.html">
+    CAMINO PORTUGUES — 2017
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino05.html">
+    CAMINO NORTE.1 — 2018
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino06.html">
+    CAMINO NORTE.2 — 2023
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino07.html">
+    CAMINO PRIMITIVO — 2023
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino08.html">
+    CAMINO MADRID — 2024
+  </a>
+
+  <a class="hotbutton" href="/hikes/Camino09.html">
+    CAMINO SAN SALVADOR — 2024
+  </a>
+
+  <a class="hotbutton disabled" href="#">
+    SPRING 2027 HIKE COMING SOON
+  </a>
+
 
 </body>
 </html>
