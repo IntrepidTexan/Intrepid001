@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Camino03</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .home-link {
+      flex: 0 0 auto;
+      min-width: 160px;
+      max-width: 200px;
+      text-decoration: none;
+      color: white;
+      background-color: #0078D4;
+      padding: 10px 0;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    .home-link:hover {
+      background-color: #005A9E;
+    }
+    h1 {
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    /* --- GALLERY: 5 thumbs per row --- */
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      margin: 20px auto 40px auto;
+      max-width: 1600px;
+      padding: 0 10px;
+      align-items: flex-start;
+      box-sizing: border-box;
+    }
+    #gallery img {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+    #gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Responsive columns */
+    @media (max-width: 1100px) {
+      #gallery { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 900px) {
+      #gallery { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      #gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* --- FULLSCREEN SLIDESHOW --- */
+    #slideshow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+    }
+    #slideshow-container img {
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    #close-slideshow {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 28px;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    #slideshow-nav {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 40px;
+      box-sizing: border-box;
+    }
+    #prev,
+    #next {
+      font-size: 32px;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV BUTTONS -->
+  <div class="button-row">
+    <a href="/hikes/" class="home-link">Return to Hikes</a>
+    <a href="/" class="home-link">Return to Homepage</a>
+  </div>
+
+  <!-- PAGE TITLES -->
+  <h1>CAMINO FRANCES.3, 2015</h1>
+  <h2>BURGOS – SAINT-JEAN-PIED-DE-PORT (BACKWARDS)</h2>
+
+  <!-- GALLERY -->
+  <div id="gallery">Loading images...</div>
+
+  <noscript>
+    <style>#gallery { display: none; }</style>
+    <div style="text-align: center; margin-top: 40px;">
+      <p>This gallery requires JavaScript to function properly.</p>
+    </div>
+  </noscript>
+
+  <!-- SLIDESHOW -->
+  <div id="slideshow-container">
+    <button id="close-slideshow" aria-label="Close slideshow">✖</button>
+    <img id="slideshow-img" src="" alt="Slideshow Image" />
+    <div id="slideshow-nav">
+      <button id="prev" aria-label="Previous image">⬅</button>
+      <button id="next" aria-label="Next image">➡</button>
+    </div>
+  </div>
+
+  <script>
+    // === CONFIG FOR GITHUB ===
+    const repoOwner = "IntrepidTexan";
+    const repoName = "Intrepid001";
+    const folderPath = "IT02/images/Camino201507"; // 2015 folder
+
+    const gallery = document.getElementById("gallery");
+    const slideshowContainer = document.getElementById("slideshow-container");
+    const slideshowImg = document.getElementById("slideshow-img");
+    const closeSlideshow = document.getElementById("close-slideshow");
+    const prevButton = document.getElementById("prev");
+    const nextButton = document.getElementById("next");
+
+    let imageUrls = [];
+    let currentIndex = 0;
+
+    async function loadImages() {
+      gallery.textContent = "Loading images...";
+
+      const apiUrl =
+        "https://api.github.com/repos/" +
+        repoOwner + "/" + repoName +
+        "/contents/" + folderPath;
+
+      try {
+        const response = await fetch(apiUrl);
+        const files = await response.json();
+
+        if (!Array.isArray(files)) {
+          gallery.innerHTML = "<p>Error loading images.</p>";
+          return;
+        }
+
+        imageUrls = files
+          .filter(f => f.type === "file" && f.name.match(/\.(jpg|jpeg|png|gif)$/i))
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(f => ({ name: f.name, url: f.download_url }));
+
+        if (imageUrls.length === 0) {
+          gallery.innerHTML = "<p>No images found.</p>";
+          return;
+        }
+
+        gallery.innerHTML = "";
+        imageUrls.forEach((img, i) => {
+          const el = document.createElement("img");
+          el.src = img.url;
+          el.alt = img.name;
+          el.dataset.index = i;
+          el.loading = "lazy";
+          gallery.appendChild(el);
+        });
+
+      } catch (err) {
+        gallery.innerHTML = "<p>Error loading images.</p>";
+      }
+    }
+
+    // Fit-to-edge, then back off 5%
+    function rescaleCurrentImage() {
+      const img = slideshowImg;
+      const naturalW = img.naturalWidth;
+      const naturalH = img.naturalHeight;
+      if (!naturalW || !naturalH) return;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const baseScale = Math.min(vw / naturalW, vh / naturalH);
+      const scale = baseScale * 0.95;
+
+      img.style.width = (naturalW * scale) + "px";
+      img.style.height = (naturalH * scale) + "px";
+    }
+
+    function updateSlideshowImage() {
+      slideshowImg.onload = () => rescaleCurrentImage();
+      slideshowImg.src = imageUrls[currentIndex].url;
+    }
+
+    function openSlideshow(startIndex) {
+      currentIndex = startIndex;
+      updateSlideshowImage();
+      slideshowContainer.style.display = "flex";
+
+      if (!document.fullscreenElement && slideshowContainer.requestFullscreen) {
+        slideshowContainer.requestFullscreen().catch(() => {});
+      }
+    }
+
+    function closeSlideshowFunction() {
+      slideshowContainer.style.display = "none";
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function showPrevImage() {
+      currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+      updateSlideshowImage();
+    }
+
+    function showNextImage() {
+      currentIndex = (currentIndex + 1) % imageUrls.length;
+      updateSlideshowImage();
+    }
+
+    gallery.addEventListener("click", e => {
+      if (e.target.tagName === "IMG") {
+        openSlideshow(parseInt(e.target.dataset.index));
+      }
+    });
+
+    prevButton.addEventListener("click", showPrevImage);
+    nextButton.addEventListener("click", showNextImage);
+    closeSlideshow.addEventListener("click", closeSlideshowFunction);
+
+    document.addEventListener("keydown", e => {
+      if (slideshowContainer.style.display === "flex") {
+        if (e.key === "ArrowLeft") showPrevImage();
+        if (e.key === "ArrowRight") showNextImage();
+        if (e.key === "Escape") closeSlideshowFunction();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (slideshowContainer.style.display === "flex") rescaleCurrentImage();
+    });
+
+    loadImages();
+  </script>
+
+  <div class="button-row">
+    <a href="/hikes/" class="home-link">Return to Hikes</a>
+    <a href="/" class="home-link">Return to Homepage</a>
+  </div>
+
+</body>
+</html>
