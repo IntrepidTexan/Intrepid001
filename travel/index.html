@@ -41,7 +41,7 @@ html, body {
 
 /* ============================================================
    MAP TITLE / HOME LINK
-   Moves and zooms with the Leaflet map
+   Moves with the Leaflet map
    ============================================================ */
 
 .map-title-marker {
@@ -616,7 +616,7 @@ const mapTitleIcon =
 
 
 L.marker(
-    [72, 0],
+    [84, 0],
     {
         icon: mapTitleIcon,
         interactive: true,
@@ -729,14 +729,6 @@ async function loadPhotoData() {
         }
 
 
-        /*
-           header: 1 means:
-           DO NOT treat row 1 as column titles.
-
-           Every worksheet row is returned
-           as a simple array.
-        */
-
         const rows =
             XLSX.utils.sheet_to_json(
                 sheet,
@@ -756,16 +748,6 @@ async function loadPhotoData() {
         rows.forEach(
             function(row, index) {
 
-
-                /*
-                   FIXED COLUMN POSITIONS
-
-                   A = row[0] = Latitude
-                   B = row[1] = Longitude
-                   C = row[2] = Country
-                   D = row[3] = Description
-                   E = row[4] = Filename
-                */
 
                 const latitude =
                     Number(row[0]);
@@ -793,10 +775,6 @@ async function loadPhotoData() {
                     ).trim();
 
 
-                /*
-                   IGNORE COMPLETELY BLANK ROWS
-                */
-
                 if (
                     row.every(
                         cell =>
@@ -810,10 +788,6 @@ async function loadPhotoData() {
 
                 }
 
-
-                /*
-                   VALIDATE COORDINATES
-                */
 
                 if (
                     !Number.isFinite(latitude) ||
@@ -830,10 +804,6 @@ async function loadPhotoData() {
 
                 }
 
-
-                /*
-                   VALIDATE FILENAME
-                */
 
                 if (!filename) {
 
@@ -866,10 +836,6 @@ async function loadPhotoData() {
                         "\\'"
                     );
 
-
-                /*
-                   CREATE MAP DOT
-                */
 
                 L.marker(
                     [
